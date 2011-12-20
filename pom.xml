@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.rhegium</groupId>
+	<artifactId>rhegium-parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Rhegium: Reactor</name>
+
+	<parent>
+		<artifactId>maven-parent</artifactId>
+		<groupId>org.sourceprojects.oss</groupId>
+		<version>1.5.0</version>
+	</parent>
+
+	<properties>
+		<slf4j-version>1.6.2</slf4j-version>
+		<guice.version>3.0</guice.version>
+		<jetty.version>8.0.4.v20111024</jetty.version>
+		<vaadin.version>6.7.2</vaadin.version>
+		<ebean.version>2.7.4</ebean.version>
+		<gwt.version>2.4.0</gwt.version>
+		<gwt.plugin.version>2.4.0</gwt.plugin.version>
+		<junit.version>4.8.2</junit.version>
+
+		<maven.compile.source>1.7</maven.compile.source>
+		<maven.compile.target>1.7</maven.compile.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<modules>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<effort>Max</effort>
+					<threshold>Low</threshold>
+					<xmlOutput>true</xmlOutput>
+					<failOnError>false</failOnError>
+					<findbugsXmlOutput>true</findbugsXmlOutput>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rat-maven-plugin</artifactId>
+				<version>1.0-alpha-3</version>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<addDefaultLicenseMatchers>false</addDefaultLicenseMatchers>
+							<licenseMatchers>
+								<classNames>
+									<className>rat.analysis.license.ApacheSoftwareLicense20</className>
+								</classNames>
+							</licenseMatchers>
+							<includes>
+								<include>pom.xml</include>
+								<include>src/**</include>
+							</includes>
+							<excludes>
+								<exclude>src/**/Base64EnDecoder.java</exclude>
+								<exclude>src/**/xhtml1-strict.xsd</exclude>
+								<exclude>src/**/xml.xsd</exclude>
+								<exclude>src/**/delete.me</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<excludePackageNames>*.internal*</excludePackageNames>
+					<detectJavaApiLink>true</detectJavaApiLink>
+					<detectLinks>true</detectLinks>
+					<source>1.7</source>
+					<links>
+						<link>http://docs.oracle.com/javase/7/docs/api/</link>
+					</links>
+				</configuration>
+				<executions>
+					<execution>
+						<id>package-javadoc</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<issueManagement>
+		<system>GitHub Issue Tracker</system>
+		<url>http://github.com/Rhegium/Rhegium/issues</url>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:git:http://github.com/Rhegium/Rhegium</connection>
+		<developerConnection>scm:git:https://github.com/Rhegium/Rhegium</developerConnection>
+		<url>http://github.com/Rhegium/Rhegium</url>
+	</scm>
+
+	<repositories>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+		<repository>
+			<id>gwt-jsonwrapper</id>
+			<url>http://yamaguchi.googlecode.com/svn/trunk/mvn2repo/repository</url>
+		</repository>
+	</repositories>
+</project>
