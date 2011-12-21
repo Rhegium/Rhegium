@@ -35,7 +35,7 @@ public final class ProvisionInterceptorFactory {
 			.get(new TypeLiteral<Set<ProvisionInterceptor>>() {
 			});
 
-	private final Collection<Module> modules = new ArrayList<>();
+	private final Collection<Module> modules = new ArrayList<Module>();
 
 	public ProvisionInterceptorFactory install(Collection<? extends Module> modules) {
 		this.modules.addAll(modules);

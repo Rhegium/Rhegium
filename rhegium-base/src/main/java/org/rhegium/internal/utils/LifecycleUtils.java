@@ -1,6 +1,6 @@
 package org.rhegium.internal.utils;
 
-import org.rhegium.api.Lifecycle;
+import org.rhegium.api.lifecycle.LifecycleAware;
 
 import com.google.inject.Injector;
 
@@ -26,24 +26,24 @@ public final class LifecycleUtils {
 
 	private static void notifyInitialized(Object value) {
 		if (isLifecycleAware(value)) {
-			((Lifecycle) value).initialized();
+			((LifecycleAware) value).initialized();
 		}
 	}
 
 	private static void notifyStartup(Object value) {
 		if (isLifecycleAware(value)) {
-			((Lifecycle) value).start();
+			((LifecycleAware) value).start();
 		}
 	}
 
 	private static void notifyShutdown(Object value) {
 		if (isLifecycleAware(value)) {
-			((Lifecycle) value).shutdown();
+			((LifecycleAware) value).shutdown();
 		}
 	}
 
 	private static boolean isLifecycleAware(Object value) {
-		return Lifecycle.class.isAssignableFrom(value.getClass());
+		return LifecycleAware.class.isAssignableFrom(value.getClass());
 	}
 
 }

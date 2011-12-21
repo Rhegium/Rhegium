@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 
 class DefaultAccessorService implements AccessorService {
 
-	private final Set<Accessor<?>> accessors = new CopyOnWriteArraySet<>();
+	private final Set<Accessor<?>> accessors = new CopyOnWriteArraySet<Accessor<?>>();
 
 	@Inject
 	DefaultAccessorService(Set<Accessor<?>> accessors) {

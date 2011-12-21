@@ -25,6 +25,8 @@
 		<gwt.plugin.version>2.4.0</gwt.plugin.version>
 		<junit.version>4.8.2</junit.version>
 		<reflectasm.version>1.01</reflectasm.version>
+		<aspectj.version>1.5.4</aspectj.version>
+		<lycia.version>1.9.9-SNAPSHOT</lycia.version>
 
 		<maven.compile.source>1.7</maven.compile.source>
 		<maven.compile.target>1.7</maven.compile.target>
@@ -72,6 +74,34 @@
 				<groupId>com.googlecode</groupId>
 				<artifactId>reflectasm</artifactId>
 				<version>${reflectasm.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jul-to-slf4j</artifactId>
+				<version>${slf4j-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjrt</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.sourceprojects.lycia</groupId>
+				<artifactId>lycia</artifactId>
+				<version>${lycia.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

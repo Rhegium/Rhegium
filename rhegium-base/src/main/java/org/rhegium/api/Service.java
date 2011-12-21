@@ -1,6 +1,8 @@
 package org.rhegium.api;
 
-public interface Service extends Lifecycle {
+import org.rhegium.api.lifecycle.LifecycleAware;
+
+public interface Service extends LifecycleAware {
 
 	String getServiceName();
 
