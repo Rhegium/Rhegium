@@ -27,6 +27,7 @@
 		<reflectasm.version>1.01</reflectasm.version>
 		<aspectj.version>1.5.4</aspectj.version>
 		<lycia.version>1.9.9-SNAPSHOT</lycia.version>
+		<netty.version>3.2.5.Final</netty.version>
 		<hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
 
 		<maven.compile.source>1.7</maven.compile.source>
@@ -36,6 +37,7 @@
 
 	<modules>
 		<module>rhegium-base</module>
+		<module>rhegium-mvc</module>
 	</modules>
 
 	<dependencies>
@@ -72,6 +74,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.jboss.netty</groupId>
+				<artifactId>netty</artifactId>
+				<version>${netty.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>com.googlecode</groupId>
 				<artifactId>reflectasm</artifactId>
 				<version>${reflectasm.version}</version>
@@ -103,6 +111,12 @@
 				<groupId>org.sourceprojects.lycia</groupId>
 				<artifactId>lycia</artifactId>
 				<version>${lycia.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin</artifactId>
+				<version>${vaadin.version}</version>
 			</dependency>
 
 			<dependency>
