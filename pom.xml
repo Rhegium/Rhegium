@@ -27,6 +27,7 @@
 		<reflectasm.version>1.01</reflectasm.version>
 		<aspectj.version>1.5.4</aspectj.version>
 		<lycia.version>1.9.9-SNAPSHOT</lycia.version>
+		<hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
 
 		<maven.compile.source>1.7</maven.compile.source>
 		<maven.compile.target>1.7</maven.compile.target>
@@ -102,6 +103,19 @@
 				<groupId>org.sourceprojects.lycia</groupId>
 				<artifactId>lycia</artifactId>
 				<version>${lycia.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>${hibernate.validator.version}</version>
+				<scope>compile</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
