@@ -40,7 +40,7 @@ import com.google.inject.Module;
 
 public class DefaultBootstrapper implements Bootstrapper {
 
-	private static final Logger LOG = DefaultLifecycleManager.getLogger(DefaultBootstrapper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultBootstrapper.class);
 
 	private static final String STANDARD_CONFIGURATION_FOLDER = "conf";
 
