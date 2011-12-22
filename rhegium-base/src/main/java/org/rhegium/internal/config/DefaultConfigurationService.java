@@ -97,7 +97,8 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Enum<T> & Configuration<T>, V> V getProperty(T configuration, String expression) {
-		final String value = getProperty0(configuration, expression);
+		final String value = getProperty0(configuration.getKey(), expression, configuration.getDefaultValue(),
+				configuration.getType(), configuration.isMultiKey() && StringUtils.isEmpty(expression));
 
 		try {
 			return (V) typeConverterManager.convert(value, configuration.getType());
@@ -106,6 +107,20 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 		catch (final ConfigurationProvisionException e) {
 			throw new ConfigurationProvisionException(String.format("Could not provision configuration key %s",
 					configuration), e);
+		}
+	}
+
+	@Override
+	public <V> V getProperty(String configurationKey, String expression, Class<V> type) {
+		final String value = getProperty0(configurationKey, expression, null, type, !StringUtils.isEmpty(expression));
+
+		try {
+			return (V) typeConverterManager.convert(value, type);
+
+		}
+		catch (final ConfigurationProvisionException e) {
+			throw new ConfigurationProvisionException(String.format("Could not provision configuration key %s",
+					configurationKey), e);
 		}
 	}
 
@@ -134,10 +149,8 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 		return resolveToken(value);
 	}
 
-	private String getProperty0(Configuration<?> configuration, String expression) {
-		String key = configuration.getKey();
-
-		if (configuration.isMultiKey()) {
+	private String getProperty0(String key, String expression, String defaultValue, Class<?> type, boolean multiKey) {
+		if (multiKey) {
 			key = key.replace(".*.", "." + expression + ".");
 		}
 
@@ -147,12 +160,12 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 			return resolveToken(value);
 		}
 
-		if (configuration.getDefaultValue() != null) {
-			return resolveToken(configuration.getDefaultValue());
+		if (defaultValue != null) {
+			return resolveToken(defaultValue);
 		}
 
-		if (configuration.getType().isPrimitive()) {
-			if (configuration.getType().equals(boolean.class)) {
+		if (type.isPrimitive()) {
+			if (type.equals(boolean.class)) {
 				return "false";
 			}
 

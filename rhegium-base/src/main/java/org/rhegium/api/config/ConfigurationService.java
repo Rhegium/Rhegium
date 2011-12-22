@@ -14,7 +14,7 @@ public interface ConfigurationService {
 	 *            The enumeration type of the configuration
 	 * @param configuration
 	 *            Configuration key to search for
-	 * @return The configurations value (or the default value if key was not
+	 * @return The configuration value (or the default value if key was not
 	 *         found)
 	 */
 	<T extends Enum<T> & Configuration<T>, V> V getProperty(T configuration);
@@ -32,10 +32,28 @@ public interface ConfigurationService {
 	 * @param expression
 	 *            The configuration's wildcard expression to complete
 	 *            configuration key
-	 * @return The configurations value (or the default value if key was not
+	 * @return The configuration value (or the default value if key was not
 	 *         found)
 	 */
 	<T extends Enum<T> & Configuration<T>, V> V getProperty(T configuration, String expression);
+
+	/**
+	 * Retrieves a configuration value by using the given configuration key and
+	 * configuration wildcard expression.
+	 * 
+	 * @param <V>
+	 *            The value's type
+	 * @param configurationKey
+	 *            The configuration key to search for
+	 * @param expression
+	 *            The configuration's wildcard expression to complete
+	 *            configuration key
+	 * @param type
+	 *            The class type of the value
+	 * @return The configuration value (or null for objects and wrappers, false
+	 *         for boolean and 0 for number types if key was not found)
+	 */
+	<V> V getProperty(String configurationKey, String expression, Class<V> type);
 
 	/**
 	 * Retrieves the raw String value from the underlying configuration store

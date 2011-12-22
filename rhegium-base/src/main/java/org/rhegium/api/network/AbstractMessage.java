@@ -6,13 +6,19 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.rhegium.api.serialization.Marshaller;
+import org.rhegium.api.serialization.MarshallerService;
 import org.rhegium.api.serialization.Unmarshaller;
+
+import com.google.inject.Inject;
 
 public abstract class AbstractMessage implements Message {
 
 	private static final AtomicLong GLOBAL_MESSAGE_ID = new AtomicLong();
 
 	private final MessageType messageType;
+
+	@Inject
+	private MarshallerService marshallerService;
 
 	private long messageId = -1;
 
@@ -47,12 +53,12 @@ public abstract class AbstractMessage implements Message {
 	}
 
 	protected void doRead(DataInput input) throws IOException {
-		Unmarshaller<Message> unmarshaller = MarshallerFactory.createUnmarshaller();
+		Unmarshaller<Message> unmarshaller = marshallerService.createUnmarshaller();
 		unmarshaller.unmarshal(this, input);
 	}
 
 	protected void doWrite(DataOutput output) throws IOException {
-		Marshaller<Message> marshaller = MarshallerFactory.createMarshaller();
+		Marshaller<Message> marshaller = marshallerService.createMarshaller();
 		marshaller.marshal(this, output);
 	}
 

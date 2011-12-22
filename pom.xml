@@ -28,6 +28,7 @@
 		<aspectj.version>1.5.4</aspectj.version>
 		<lycia.version>1.9.9-SNAPSHOT</lycia.version>
 		<netty.version>3.2.5.Final</netty.version>
+		<cappadocia.version>0.0.1-SNAPSHOT</cappadocia.version>
 		<hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
 
 		<maven.compile.source>1.7</maven.compile.source>
@@ -111,6 +112,11 @@
 				<groupId>org.sourceprojects.lycia</groupId>
 				<artifactId>lycia</artifactId>
 				<version>${lycia.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.sourceprojects.cappadocia</groupId>
+				<artifactId>cappadocia</artifactId>
+				<version>${cappadocia.version}</version>
 			</dependency>
 
 			<dependency>
