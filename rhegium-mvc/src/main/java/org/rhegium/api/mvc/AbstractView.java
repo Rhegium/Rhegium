@@ -1,11 +1,11 @@
 package org.rhegium.api.mvc;
 
+import org.rhegium.api.security.SecurityService;
+import org.rhegium.api.security.UserSession;
+
 import com.google.inject.Inject;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.VerticalLayout;
-
-import de.heldenreich.wcc.web.commons.security.SecurityService;
-import de.heldenreich.wcc.web.commons.security.UserSession;
 
 public abstract class AbstractView<C extends ComponentController<C, B>, B extends View<C, B>> implements View<C, B> {
 

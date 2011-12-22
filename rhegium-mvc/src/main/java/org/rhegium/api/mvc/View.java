@@ -1,8 +1,8 @@
 package org.rhegium.api.mvc;
 
-import com.vaadin.ui.AbstractComponent;
+import org.rhegium.api.uibinder.UiBindable;
 
-import de.heldenreich.wcc.framework.mvc.uibinder.UiBindable;
+import com.vaadin.ui.AbstractComponent;
 
 public interface View<C extends ComponentController<C, B>, B extends View<C, B>> extends UiBindable {
 

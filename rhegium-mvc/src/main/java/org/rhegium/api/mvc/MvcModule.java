@@ -6,11 +6,6 @@ import java.util.Collections;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sourceprojects.cappadocia.ClassInfo;
-import org.sourceprojects.cappadocia.ClassPool;
-import org.sourceprojects.cappadocia.ClassQuery;
-import org.sourceprojects.cappadocia.builder.ClassAttributeConstraintSelector;
-import org.sourceprojects.cappadocia.builder.ClassQueryBuilder;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;

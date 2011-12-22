@@ -6,6 +6,14 @@ import org.rhegium.api.serialization.Attribute;
 
 public class FailureMessage extends AbstractMessage {
 
+	private static final MessageType FAILURE = new MessageType() {
+
+		@Override
+		public long getMessageTypeId() {
+			return Long.MIN_VALUE;
+		}
+	};
+
 	@Attribute(index = 1)
 	private String errorMsg;
 
@@ -16,7 +24,7 @@ public class FailureMessage extends AbstractMessage {
 	private String[] stackTrace;
 
 	public FailureMessage() {
-		super(MessageType.Failure);
+		super(FAILURE);
 	}
 
 	public String getErrorMsg() {

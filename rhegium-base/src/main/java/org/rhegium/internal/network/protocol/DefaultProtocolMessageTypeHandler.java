@@ -13,15 +13,21 @@ import org.rhegium.api.network.MessageHandler;
 import org.rhegium.api.network.MessageListener;
 import org.rhegium.api.network.MessageType;
 import org.rhegium.api.network.MessageTypeHandler;
+import org.rhegium.api.network.MessageTypeService;
 import org.rhegium.api.network.ProtocolConfigurationException;
 import org.rhegium.api.network.protocol.FailureMessage;
 import org.rhegium.api.network.protocol.ProtocolMessageTypeHandler;
 import org.rhegium.api.network.socket.SendingClient;
 
+import com.google.inject.Inject;
+
 public class DefaultProtocolMessageTypeHandler implements ProtocolMessageTypeHandler {
 
 	private final Map<MessageType, MessageTypeDefinition<?>> messageTypeDefinitions;
 	private final Set<MessageListener> listeners = new HashSet<MessageListener>();
+
+	@Inject
+	private MessageTypeService messageTypeService;
 
 	public DefaultProtocolMessageTypeHandler() {
 		messageTypeDefinitions = new HashMap<MessageType, MessageTypeDefinition<?>>();
@@ -72,7 +78,7 @@ public class DefaultProtocolMessageTypeHandler implements ProtocolMessageTypeHan
 	@Override
 	public Message handlePacket(ChannelBufferInputStream stream) throws Exception {
 		final long messageTypeId = stream.readLong();
-		final MessageType messageType = MessageType.byValue(messageTypeId);
+		final MessageType messageType = messageTypeService.findByMessageTypeId(messageTypeId);
 
 		if (messageType == null) {
 			throw new ProtocolConfigurationException("MessageType with id " + messageTypeId + " is not registered");

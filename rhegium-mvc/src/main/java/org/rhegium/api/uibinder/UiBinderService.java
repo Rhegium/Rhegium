@@ -2,10 +2,10 @@ package org.rhegium.api.uibinder;
 
 import java.util.Locale;
 
-import com.vaadin.ui.Component;
+import org.rhegium.api.mvc.ComponentController;
+import org.rhegium.api.mvc.View;
 
-import de.heldenreich.wcc.framework.mvc.ComponentController;
-import de.heldenreich.wcc.framework.mvc.View;
+import com.vaadin.ui.Component;
 
 public interface UiBinderService {
 

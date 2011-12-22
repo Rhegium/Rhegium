@@ -3,11 +3,11 @@ package org.rhegium.api.mvc;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.rhegium.api.uibinder.InjectUi;
+
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-
-import de.heldenreich.wcc.framework.mvc.uibinder.InjectUi;
 
 public abstract class AbstractBindableView<C extends ComponentController<C, B>, B extends View<C, B>> extends
 		AbstractView<C, B> {

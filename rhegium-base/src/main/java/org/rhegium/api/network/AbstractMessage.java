@@ -5,9 +5,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import de.heldenreich.wcc.commons.net.serializer.Marshaller;
-import de.heldenreich.wcc.commons.net.serializer.MarshallerFactory;
-import de.heldenreich.wcc.commons.net.serializer.Unmarshaller;
+import org.rhegium.api.serialization.Marshaller;
+import org.rhegium.api.serialization.Unmarshaller;
 
 public abstract class AbstractMessage implements Message {
 

@@ -4,34 +4,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.jboss.netty.channel.ChannelFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.rhegium.api.i18n.LanguageService;
+import org.rhegium.api.security.Permission;
+import org.rhegium.api.security.PermissionAllowed;
+import org.rhegium.api.security.Principal;
+import org.rhegium.api.security.SecurityService;
+import org.rhegium.api.security.UserSession;
+import org.rhegium.api.security.spi.PermissionResolver;
+import org.rhegium.api.uibinder.UiBinderService;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import de.heldenreich.wcc.commons.net.AbstractMessage;
-import de.heldenreich.wcc.commons.net.Message;
-import de.heldenreich.wcc.commons.net.client.ServiceClient;
-import de.heldenreich.wcc.commons.net.client.processor.MessageDispatcher;
-import de.heldenreich.wcc.commons.net.client.processor.MessageDispatcher.MessageReceivedListener;
-import de.heldenreich.wcc.commons.net.client.processor.MessageFuture;
-import de.heldenreich.wcc.framework.i18n.LanguageService;
-import de.heldenreich.wcc.framework.mvc.uibinder.UiBinderService;
-import de.heldenreich.wcc.framework.security.PermissionAllowed;
-import de.heldenreich.wcc.framework.security.PermissionResolver;
-import de.heldenreich.wcc.web.commons.gameserver.GameServerDescriptor;
-import de.heldenreich.wcc.web.commons.gameserver.GameServerService;
-import de.heldenreich.wcc.web.commons.security.Permission;
-import de.heldenreich.wcc.web.commons.security.Principal;
-import de.heldenreich.wcc.web.commons.security.SecurityService;
-import de.heldenreich.wcc.web.commons.security.UserSession;
-
 public abstract class AbstractComponentController<C extends ComponentController<C, B>, B extends View<C, B>> implements
 		ComponentController<C, B> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractComponentController.class);
 
 	@SuppressWarnings("unchecked")
 	private static final Collection<Class<? extends Permission>> VISIBLE_TO_ALL = Collections
@@ -39,16 +25,10 @@ public abstract class AbstractComponentController<C extends ComponentController<
 					.<Class<? extends Permission>> asList(new Class[] { PermissionAllowed.class }));
 
 	@Inject
-	private GameServerService gameServerService;
-
-	@Inject
 	private SecurityService securityService;
 
 	@Inject
 	private ViewManager viewManager;
-
-	@Inject
-	private MessageDispatcher messageDispatcher;
 
 	@Inject
 	private LanguageService languageService;
@@ -103,36 +83,6 @@ public abstract class AbstractComponentController<C extends ComponentController<
 	}
 
 	@Override
-	public <K extends AbstractMessage, V extends Message> MessageFuture<K, V> createMessageProcessor() {
-		return messageDispatcher.createMessageProcessor(getServiceClient());
-	}
-
-	@Override
-	public ChannelFuture sendMessageAsync(Message message) {
-		if (message instanceof AbstractMessage) {
-			if (LOG.isTraceEnabled()) {
-				LOG.trace("Async sending message " + message + "...");
-			}
-
-			AbstractMessage request = (AbstractMessage) message;
-			request = AbstractMessage.addRequestMessageId(request);
-
-			// Async handling of incoming response messages
-			messageDispatcher.addMessageEvent(request.getMessageId(), new MessageReceivedListener() {
-
-				@Override
-				public void messageReceived(Message message) {
-					// Prepare async UI changes pushing and handle message
-					prepareMessageHandling(message);
-				}
-			});
-			return getServiceClient().sendMessage(request);
-		}
-
-		return getServiceClient().sendMessage(message);
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public B createView() {
 		B view = injector.getInstance(viewClass);
@@ -158,12 +108,6 @@ public abstract class AbstractComponentController<C extends ComponentController<
 		return multiViewCapable;
 	}
 
-	protected ServiceClient getServiceClient() {
-		UserSession<?> userSession = getUserSession();
-		GameServerDescriptor descriptor = userSession.getSelectedGameServerDescriptor();
-		return gameServerService.getServiceClient(descriptor);
-	}
-
 	protected UserSession<?> getUserSession() {
 		return securityService.getUserSession();
 	}
@@ -174,14 +118,6 @@ public abstract class AbstractComponentController<C extends ComponentController<
 
 	protected LanguageService getLanguageService() {
 		return languageService;
-	}
-
-	private void prepareMessageHandling(Message message) {
-		// TODO View handling
-		onMessage(message, null);
-	}
-
-	protected void onMessage(Message message, B view) {
 	}
 
 }
