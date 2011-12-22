@@ -1,29 +1,15 @@
 package org.rhegium.internal.config.tokenresolver;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import org.rhegium.api.config.TokenResolver;
+import org.rhegium.api.lifecycle.LifecycleManager;
 import org.rhegium.internal.utils.StringUtils;
+
+import com.google.inject.Inject;
 
 class ProjectVersionTokenResolver implements TokenResolver {
 
-	private final String version;
-
-	public ProjectVersionTokenResolver() throws IOException {
-		final InputStream is = ProjectVersionTokenResolver.class.getClassLoader().getResourceAsStream(
-				"META-INF/version.properties");
-
-		if (is != null) {
-			final Properties properties = new Properties();
-			properties.load(is);
-			version = properties.getProperty("com.yujinserver.version").replace("-SNAPSHOT", ".SNAPSHOT");
-		}
-		else {
-			version = "unknown";
-		}
-	}
+	@Inject
+	private LifecycleManager lifecycleManager;
 
 	@Override
 	public String resolve(final String value) {
@@ -32,7 +18,7 @@ class ProjectVersionTokenResolver implements TokenResolver {
 		}
 
 		if ("project.version".equals(value)) {
-			return version;
+			return lifecycleManager.getVersion();
 		}
 
 		return null;

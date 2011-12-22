@@ -1,5 +1,7 @@
 package org.rhegium.api.modules;
 
+import org.rhegium.internal.utils.StringUtils;
+
 public class IllegalCyclicDepedency extends RuntimeException {
 
 	private static final long serialVersionUID = -5186279868116796470L;
@@ -14,8 +16,7 @@ public class IllegalCyclicDepedency extends RuntimeException {
 
 	@Override
 	public String getMessage() {
-		return new StringBuilder("Illegal cycle detected (").append(cyclic1).append(" => ").append(cyclic2)
-				.append(" => ").append(cyclic1).append(")").toString();
+		return StringUtils.join(" ", "Illegal cycle detected (", cyclic1, " => ", cyclic2, " => ", cyclic1, ")");
 	}
 
 	@Override

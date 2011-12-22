@@ -1,6 +1,7 @@
 package org.rhegium.internal.utils;
 
 import org.rhegium.api.lifecycle.LifecycleAware;
+import org.rhegium.api.lifecycle.LifecycleManager;
 
 import com.google.inject.Injector;
 
@@ -11,6 +12,12 @@ public final class LifecycleUtils {
 
 	public static <T> T startLifecycleEntity(T entity, Injector injector) {
 		injector.injectMembers(entity);
+
+		if (isLifecycleAware(entity)) {
+			LifecycleManager lifecycleManager = injector.getInstance(LifecycleManager.class);
+			lifecycleManager.registerLifecycleAware((LifecycleAware) entity);
+		}
+
 		return startLifecycleEntity(entity);
 	}
 

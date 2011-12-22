@@ -24,6 +24,7 @@ import org.rhegium.api.config.ConfigurationProvisionException;
 import org.rhegium.api.config.ConfigurationService;
 import org.rhegium.api.config.TokenResolverManager;
 import org.rhegium.api.typeconverter.TypeConverterManager;
+import org.rhegium.internal.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +104,8 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 
 		}
 		catch (final ConfigurationProvisionException e) {
-			throw new ConfigurationProvisionException("Could not provision configuration key " + configuration, e);
+			throw new ConfigurationProvisionException(String.format("Could not provision configuration key %s",
+					configuration), e);
 		}
 	}
 
@@ -190,11 +192,13 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 		}
 
 		if (configuration.isDirectory()) {
-			LOG.info("Registering directory " + configuration.getName() + " for filesystem events...");
+			LOG.info(StringUtils.join(" ", "Registering directory ", configuration.getName(),
+					" for filesystem events..."));
+
 			configuration.toPath().register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
 					StandardWatchEventKinds.ENTRY_MODIFY);
 
-			LOG.info("Searching directory " + configuration.getName() + " for configurations...");
+			LOG.info(StringUtils.join(" ", "Searching directory ", configuration.getName(), " for configurations..."));
 			for (File child : configuration.listFiles()) {
 				recursiveReadProperties(child);
 			}
@@ -225,7 +229,8 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 			final String value = properties.getProperty(sKey);
 
 			if (oldValue != null) {
-				LOG.info("Overriding old configuration value '" + key + "' ==> '" + oldValue + "' with '" + value + "'");
+				LOG.info(StringUtils.join(" ", "Overriding old configuration value '", key.toString(), "' ==> '",
+						oldValue, "' with '", value, "'"));
 			}
 
 			this.properties.put(sKey, value);
@@ -244,10 +249,10 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 							Path path = (Path) event.context();
 							if (path.getFileName().toString().toLowerCase().endsWith(".properties")) {
 								if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-									LOG.info("Found new properties file: " + path.toString());
+									LOG.info(StringUtils.join(" ", "Found new properties file: ", path.toString()));
 								}
 								else if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-									LOG.info("Found modified properties file: " + path.toString());
+									LOG.info(StringUtils.join(" ", "Found modified properties file: ", path.toString()));
 								}
 
 								readProperties(path.toFile());

@@ -16,6 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.log4j.Logger;
+import org.rhegium.internal.utils.StringUtils;
 import org.sourceprojects.lycia.LyciaParser;
 import org.sourceprojects.lycia.fluent.FluentBuilder;
 
@@ -42,32 +43,26 @@ public final class PluginContextHelper {
 		}
 	}
 
-	public static final PluginDescriptor buildPluginDescriptor(
-			final File pluginPath, final File workPath, final ClassLoader parent) {
+	public static final PluginDescriptor buildPluginDescriptor(final File pluginPath, final File workPath,
+			final ClassLoader parent) {
 
-		final PluginClassLoader pluginClassLoader = buildPluginClassLoader(
-				pluginPath, workPath, parent);
+		final PluginClassLoader pluginClassLoader = buildPluginClassLoader(pluginPath, workPath, parent);
 
-		final PluginLyciaContextObject contextObject = new PluginLyciaContextObject(
-				pluginClassLoader);
+		final PluginLyciaContextObject contextObject = new PluginLyciaContextObject(pluginClassLoader);
 
 		final LyciaParser<PluginLyciaContextObject> parser = BUILDER.configure(
 				FluentBuilder.contextObject(contextObject)).build();
 
-		try (final InputStream is = pluginClassLoader
-				.getResourceAsStream("META-INF/yujin-plugin.xml")) {
-
+		try (final InputStream is = pluginClassLoader.getResourceAsStream("META-INF/rhegium-plugin.xml")) {
 			parser.parse(is);
 
-			final PluginDescriptor pluginDescriptor = contextObject
-					.getPluginDescriptor();
+			final PluginDescriptor pluginDescriptor = contextObject.getPluginDescriptor();
 
 			final PluginClassLoader pcl = contextObject.getClassLoader();
 			pcl.setExports(pluginDescriptor.getExports());
 			pcl.setPluginName(pluginDescriptor.getName());
 
 			return pluginDescriptor;
-
 		}
 		catch (final Exception e) {
 			throw new IllegalStateException(e);
@@ -87,7 +82,8 @@ public final class PluginContextHelper {
 
 				}
 				catch (final Exception e) {
-					throw new RuntimeException("Plugin " + pluginDescriptor.getId() + " has unresolved dependencies", e);
+					throw new RuntimeException(StringUtils.join(" ", "Plugin ", pluginDescriptor.getId(),
+							" has unresolved dependencies"), e);
 				}
 			}
 		}
@@ -104,7 +100,7 @@ public final class PluginContextHelper {
 		if (pluginPath.isFile()) {
 			final String filename = pluginPath.getName().toLowerCase();
 			if (filename.endsWith(".jar")) {
-				LOG.info("Deploy plugin from JAR file " + pluginPath.getAbsolutePath());
+				LOG.info(StringUtils.join(" ", "Deploy plugin from JAR file ", pluginPath.getAbsolutePath()));
 
 				return new URL[] { pluginPath.toURI().toURL() };
 			}
@@ -114,8 +110,9 @@ public final class PluginContextHelper {
 
 				final File deploymentPath = new File(workPath, filename);
 				if (deploymentPath.exists()) {
-					throw new IllegalStateException("Deployment directory '" + deploymentPath.getAbsolutePath()
-							+ "' cannot exists - Is there " + "some other instance running?");
+					throw new IllegalStateException(StringUtils.join(" ", "Deployment directory '",
+							deploymentPath.getAbsolutePath(), "' cannot exists - Is there ",
+							"some other instance running?"));
 				}
 
 				deploymentPath.mkdirs();
@@ -132,8 +129,7 @@ public final class PluginContextHelper {
 		return jars.toArray(new URL[jars.size()]);
 	}
 
-	private static void extractZipToFolder(final File pluginPath,
-			final File deploymentPath) throws IOException {
+	private static void extractZipToFolder(final File pluginPath, final File deploymentPath) throws IOException {
 
 		final ZipFile zipFile = new ZipFile(pluginPath);
 		final Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -143,11 +139,10 @@ public final class PluginContextHelper {
 
 			if (entry.isDirectory()) {
 				target.mkdirs();
-
-			} else {
+			}
+			else {
 				try (final InputStream input = zipFile.getInputStream(entry);
-						final FileOutputStream output = new FileOutputStream(
-								target)) {
+						final FileOutputStream output = new FileOutputStream(target)) {
 
 					final byte[] buffer = new byte[1024];
 					int nrBytesRead;
@@ -165,10 +160,8 @@ public final class PluginContextHelper {
 		for (final File entry : pluginPath.listFiles()) {
 			if (entry.isDirectory()) {
 				jars.addAll(findAllPluginJars0(entry));
-
 			}
 			else if (entry.isFile() && entry.getName().toLowerCase().endsWith(".jar")) {
-
 				jars.add(entry.toURI().toURL());
 			}
 		}
@@ -198,7 +191,6 @@ public final class PluginContextHelper {
 
 	private static void checkForDuplicateIds(final Collection<ResolvablePluginDependency> pluginDescriptors) {
 		final Set<ResolvablePluginDependency> ids = new HashSet<ResolvablePluginDependency>();
-
 		final Iterator<ResolvablePluginDependency> iterator = pluginDescriptors.iterator();
 
 		while (iterator.hasNext()) {
@@ -209,16 +201,16 @@ public final class PluginContextHelper {
 				if (descriptor.getId().equals(pluginDescriptor.getId())) {
 					if (descriptor.getPluginClass().equals(pluginDescriptor.getPluginClass())) {
 
-						LOG.warn("Found same plugin descriptor '" + pluginDescriptor.getId()
-								+ "' in multiple classloaders...");
+						LOG.warn(StringUtils.join(" ", "Found same plugin descriptor '", pluginDescriptor.getId(),
+								"' in multiple classloaders..."));
 
 						addPluginDescriptor = false;
 						iterator.remove();
 						break;
 					}
 
-					throw new RuntimeException("Dupplicate Id '" + pluginDescriptor.getId() + "' in plugins ['"
-							+ descriptor.getName() + "', '" + pluginDescriptor.getName() + "']");
+					throw new RuntimeException(StringUtils.join(" ", "Dupplicate Id '", pluginDescriptor.getId(),
+							"' in plugins ['", descriptor.getName(), "', '", pluginDescriptor.getName(), "']"));
 				}
 			}
 

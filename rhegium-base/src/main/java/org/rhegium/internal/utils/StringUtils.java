@@ -5,7 +5,7 @@ public final class StringUtils {
 	private StringUtils() {
 	}
 
-	public static boolean isEmpty(final String value) {
+	public static boolean isEmpty(String value) {
 		if (value == null) {
 			return true;
 		}
@@ -13,14 +13,17 @@ public final class StringUtils {
 		return value.isEmpty();
 	}
 
-	public static String concat(final String... strings) {
+	public static String join(String separator, String... strings) {
 		final StringBuilder builder = new StringBuilder();
 
-		for (final String string : strings) {
-			builder.append(string);
+		for (int i = 0; i < strings.length; i++) {
+			builder.append(strings[i]);
+
+			if (i < strings.length - 2) {
+				builder.append(separator);
+			}
 		}
 
 		return builder.toString();
 	}
-
 }

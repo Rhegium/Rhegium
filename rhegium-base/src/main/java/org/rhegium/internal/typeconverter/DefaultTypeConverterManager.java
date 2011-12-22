@@ -63,7 +63,7 @@ class DefaultTypeConverterManager implements TypeConverterManager {
 			}
 		}
 
-		throw new ConfigurationProvisionException("Value '" + value + "' could not be converted");
+		throw new ConfigurationProvisionException(String.format("Value '%s' could not be converted", value));
 	}
 
 }

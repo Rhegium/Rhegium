@@ -13,6 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.aspectj.weaver.loadtime.WeavingURLClassLoader;
 import org.rhegium.api.modules.IllegalCyclicDepedency;
 import org.rhegium.internal.utils.ReflectionUtils;
+import org.rhegium.internal.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,8 @@ public class PluginClassLoader extends WeavingURLClassLoader {
 		super(urls, parent);
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Adding classloader: PluginClassLoader(" + ReflectionUtils.buildClassLoaderHierachy(this) + ")");
+			LOG.debug(StringUtils.join(" ", "Adding classloader: PluginClassLoader(",
+					ReflectionUtils.buildClassLoaderHierachy(this), ")"));
 		}
 	}
 
@@ -63,14 +65,14 @@ public class PluginClassLoader extends WeavingURLClassLoader {
 	public synchronized Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Searching class " + name + "...");
+			LOG.trace(StringUtils.join(" ", "Searching class ", name, "..."));
 		}
 
 		try {
 			final Class<?> clazz = super.loadClass(name, resolve);
 			if (clazz != null) {
 				if (LOG.isTraceEnabled()) {
-					LOG.trace("Found class " + name + " in parent classLoader.");
+					LOG.trace(StringUtils.join(" ", "Found class ", name, " in parent classLoader."));
 				}
 
 				return clazz;
@@ -81,15 +83,16 @@ public class PluginClassLoader extends WeavingURLClassLoader {
 			try {
 				lock.lock();
 				if (LOG.isTraceEnabled()) {
-					LOG.trace("Available buddyClassLoaders for " + pluginName + ": " + buddyClassLoadersToString());
+					LOG.trace(StringUtils.join(" ", "Available buddyClassLoaders for ", pluginName, ": ",
+							buddyClassLoadersToString()));
 				}
 
 				for (final PluginClassLoader buddyClassLoader : buddyClassLoaders) {
 					final Collection<String> buddyExports = buddyClassLoader.exports;
 					if (buddyExports != null) {
 						if (LOG.isTraceEnabled()) {
-							LOG.trace("Searching class " + name + " in buddyClassLoader '"
-									+ buddyClassLoader.pluginName + "'...");
+							LOG.trace(StringUtils.join(" ", "Searching class ", name, " in buddyClassLoader '",
+									buddyClassLoader.pluginName, "'..."));
 						}
 
 						final Iterator<String> iterator = buddyExports.iterator();
@@ -117,8 +120,8 @@ public class PluginClassLoader extends WeavingURLClassLoader {
 
 							try {
 								if (LOG.isTraceEnabled()) {
-									LOG.trace("Trying to load class " + name + " in buddyClassLoader '"
-											+ buddyClassLoader.pluginName + "'...");
+									LOG.trace(StringUtils.join(" ", "Trying to load class ", name,
+											" in buddyClassLoader '", buddyClassLoader.pluginName, "'..."));
 								}
 
 								final Class<?> buddyClass = buddyClassLoader.loadClass(name);
@@ -140,8 +143,8 @@ public class PluginClassLoader extends WeavingURLClassLoader {
 			}
 		}
 
-		throw new ClassNotFoundException("Class " + name + " could not be found on plugin classpath for plugin '"
-				+ pluginName + "'");
+		throw new ClassNotFoundException(StringUtils.join(" ", "Class ", name,
+				" could not be found on plugin classpath for plugin '", pluginName, "'"));
 	}
 
 	void setExports(final Collection<String> exports) {

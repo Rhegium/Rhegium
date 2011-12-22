@@ -2,6 +2,7 @@ package org.rhegium.api.serialization.accessor;
 
 import java.io.IOException;
 
+import org.rhegium.internal.serialization.AccessorType;
 import org.rhegium.internal.serialization.AttributeDescriptor;
 
 public interface Accessor<T> {

@@ -40,7 +40,8 @@ public class PluginXmlLyciaParser {
 				pluginClass = (Class<? extends FrameworkPlugin>) contextObject
 						.getClassLoader().loadClass(className);
 
-			} else {
+			}
+			else {
 				pluginClass = null;
 			}
 

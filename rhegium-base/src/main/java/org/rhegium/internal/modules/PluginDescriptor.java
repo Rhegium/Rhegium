@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.rhegium.api.modules.FrameworkPlugin;
 import org.rhegium.api.modules.PluginDependency;
+import org.rhegium.internal.utils.StringUtils;
 
 public class PluginDescriptor implements ResolvablePluginDependency {
 
@@ -115,7 +116,8 @@ public class PluginDescriptor implements ResolvablePluginDependency {
 						descriptors.addAll(pluginDescriptor.resolve(pluginDescriptors));
 
 						if (!pluginDescriptor.isResolved()) {
-							throw new Exception("Dependency " + pluginDescriptor.getId() + " could not be resolved");
+							throw new Exception(StringUtils.join(" ", "Dependency ", pluginDescriptor.getId(),
+									" could not be resolved"));
 						}
 					}
 				}
@@ -145,7 +147,7 @@ public class PluginDescriptor implements ResolvablePluginDependency {
 	}
 
 	private void setResolved() {
-		LOG.info("Resolved Dependency " + getId() + "...");
+		LOG.info(StringUtils.join(" ", "Resolved Dependency ", getId(), "..."));
 		this.resolved = true;
 	}
 

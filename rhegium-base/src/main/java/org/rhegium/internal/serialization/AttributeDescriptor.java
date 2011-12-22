@@ -69,8 +69,8 @@ public final class AttributeDescriptor {
 			// If stream does not support position marking, we cannot go on at
 			// this point so inform the user
 			if (!stream.markSupported()) {
-				throw new AttributeAccessorException("Cannot analyse stream for string or array size on attribute "
-						+ this);
+				throw new AttributeAccessorException(String.format(
+						"Cannot analyse stream for string or array size on attribute %s", this));
 			}
 
 			try {
@@ -129,7 +129,7 @@ public final class AttributeDescriptor {
 
 	@Override
 	public String toString() {
-		return "Attribute [attribute=" + attribute + ", field=" + field + "]";
+		return String.format("Attribute [attribute=%s, field=%s]", attribute, field);
 	}
 
 }

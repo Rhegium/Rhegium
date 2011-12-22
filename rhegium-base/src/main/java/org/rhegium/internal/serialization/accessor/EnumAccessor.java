@@ -37,7 +37,8 @@ class EnumAccessor extends AbstractAccessor<Enum<?>> {
 
 			// Class is no enum type
 			if (values == null) {
-				throw new AttributeAccessorException("Read class " + clazz.getCanonicalName() + " is no Enum type");
+				throw new AttributeAccessorException(String.format("Read class %s is no Enum type",
+						clazz.getCanonicalName()));
 			}
 
 			int ordinal = stream.readInt();

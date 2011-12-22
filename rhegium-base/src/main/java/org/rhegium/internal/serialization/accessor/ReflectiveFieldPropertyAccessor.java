@@ -19,7 +19,8 @@ class ReflectiveFieldPropertyAccessor<T> implements FieldPropertyAccessor<T> {
 					return (T) attribute.getField().get(object);
 				}
 				catch (Exception e) {
-					throw new AttributeAccessorException("Could not read value from attribute " + attribute, e);
+					throw new AttributeAccessorException(String.format("Could not read value from attribute %s",
+							attribute), e);
 				}
 			}
 		});
@@ -36,7 +37,8 @@ class ReflectiveFieldPropertyAccessor<T> implements FieldPropertyAccessor<T> {
 					return null;
 				}
 				catch (Exception e) {
-					throw new AttributeAccessorException("Could not write value to attribute " + attribute, e);
+					throw new AttributeAccessorException(String.format("Could not write value to attribute %s",
+							attribute), e);
 				}
 			}
 		});

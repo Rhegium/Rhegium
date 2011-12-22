@@ -30,6 +30,7 @@ import org.rhegium.internal.modules.PluginContextHelper;
 import org.rhegium.internal.modules.PluginDescriptor;
 import org.rhegium.internal.modules.PluginThreadContext;
 import org.rhegium.internal.utils.ReflectionUtils;
+import org.rhegium.internal.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -88,10 +89,12 @@ public class DefaultBootstrapper implements Bootstrapper {
 
 		final Collection<FrameworkPlugin> plugins = new ArrayList<FrameworkPlugin>();
 		for (final ResolvablePluginDependency pluginDescriptor : pluginDescriptors) {
-			LOG.info("Creating bundle "
-					+ pluginDescriptor.getName()
-					+ (!pluginDescriptor.isApiBundle() ? " by using Class '"
-							+ pluginDescriptor.getPluginClass().getCanonicalName() : " (API-Bundle)") + "...");
+			LOG.info(StringUtils.join(
+					" ",
+					"Creating bundle ",
+					pluginDescriptor.getName(),
+					(!pluginDescriptor.isApiBundle() ? StringUtils.join(" ", "by using Class '", pluginDescriptor
+							.getPluginClass().getCanonicalName()) : " (API-Bundle)"), "..."));
 
 			if (!pluginDescriptor.isApiBundle()) {
 				final FrameworkPlugin plugin = pluginDescriptor.getPluginClass().newInstance();
@@ -99,7 +102,7 @@ public class DefaultBootstrapper implements Bootstrapper {
 				// Add plugin
 				plugins.add(plugin);
 
-				LOG.info("Configuring Injector for Plugin '" + plugin.getName() + "'...");
+				LOG.info(StringUtils.join(" ", "Configuring Injector for Plugin '", plugin.getName(), "'..."));
 
 				final Module module = new PluginThreadContext<Module>(pluginDescriptor.getPluginClassLoader()) {
 
@@ -129,7 +132,7 @@ public class DefaultBootstrapper implements Bootstrapper {
 			final PluginManager pm = (PluginManager) pluginManager;
 
 			for (final FrameworkPlugin plugin : plugins) {
-				LOG.info("Registering Plugin '" + plugin.getName() + "'...");
+				LOG.info(StringUtils.join(" ", "Registering Plugin '", plugin.getName(), "'..."));
 				pm.registerPlugin(plugin);
 			}
 		}
@@ -169,7 +172,8 @@ public class DefaultBootstrapper implements Bootstrapper {
 
 		final File pluginPath = new File(pluginsFolder);
 		if (!pluginPath.exists() && !pluginPath.isDirectory()) {
-			throw new IllegalArgumentException(PROPERTIES_BOOTSTRAP_PLUGIN_FOLDER + " must exists and be a directory");
+			throw new IllegalArgumentException(StringUtils.join(" ", PROPERTIES_BOOTSTRAP_PLUGIN_FOLDER,
+					" must exists and be a directory"));
 		}
 		return pluginPath;
 	}
@@ -181,7 +185,7 @@ public class DefaultBootstrapper implements Bootstrapper {
 
 			@Override
 			public List<ResolvablePluginDependency> run() {
-				LOG.info("Searching framework plugins in " + pluginPath.getAbsolutePath() + "...");
+				LOG.info(StringUtils.join(" ", "Searching framework plugins in ", pluginPath.getAbsolutePath(), "..."));
 
 				final List<ResolvablePluginDependency> pluginDescriptors = new ArrayList<ResolvablePluginDependency>();
 				for (final File child : pluginPath.listFiles()) {
@@ -189,7 +193,8 @@ public class DefaultBootstrapper implements Bootstrapper {
 							workPath, classLoader);
 
 					if (pluginDescriptor != null) {
-						LOG.info("Found plugin '" + pluginDescriptor.getName() + "' in path " + child.getAbsolutePath());
+						LOG.info(StringUtils.join(" ", "Found plugin '", pluginDescriptor.getName(), "' in path ",
+								child.getAbsolutePath()));
 
 						pluginDescriptors.add(pluginDescriptor);
 					}
@@ -235,7 +240,8 @@ public class DefaultBootstrapper implements Bootstrapper {
 		final File workPath = new File(workFolder);
 		if (workPath.exists()) {
 			if (!workPath.isDirectory()) {
-				throw new IllegalArgumentException(PROPERTIES_BOOTSTRAP_WORK_FOLDER + " must be a directory");
+				throw new IllegalArgumentException(StringUtils.join(" ", PROPERTIES_BOOTSTRAP_WORK_FOLDER,
+						" must be a directory"));
 			}
 
 			// Delete old work directory
@@ -277,7 +283,7 @@ public class DefaultBootstrapper implements Bootstrapper {
 	private String[] loadMultiStringProperty(final Properties properties, final String propertyName) {
 		final String value = properties.getProperty(propertyName);
 		if (value == null || value.isEmpty()) {
-			throw new IllegalArgumentException(propertyName + " cannot be null");
+			throw new IllegalArgumentException(StringUtils.join(" ", propertyName, " cannot be null"));
 		}
 
 		final String[] values = trimStrings(value.split(","));

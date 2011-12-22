@@ -21,7 +21,6 @@ import org.rhegium.api.serialization.Marshaller;
 import org.rhegium.api.serialization.Unmarshaller;
 import org.rhegium.api.serialization.accessor.Accessor;
 import org.rhegium.api.serialization.accessor.AccessorService;
-import org.rhegium.api.serialization.accessor.AccessorType;
 
 import com.google.inject.Inject;
 
@@ -54,8 +53,8 @@ class DefaultPojoMarshaller<O> implements Marshaller<O>, Unmarshaller<O> {
 		final int length = attributes.size();
 		for (final AttributeDescriptor attribute : attributes) {
 			if (index < length - 1 && attribute.isOptional()) {
-				throw new IllegalOptionalAttributeException(
-						"Optional attributes can only be the last attribute in a packet: " + attribute);
+				throw new IllegalOptionalAttributeException(String.format(
+						"Optional attributes can only be the last attribute in a packet: %s", attribute));
 			}
 
 			index++;
@@ -71,8 +70,8 @@ class DefaultPojoMarshaller<O> implements Marshaller<O>, Unmarshaller<O> {
 
 		final Accessor<?> accessor = accessorService.resolveAccessor(type);
 		if (accessor == null) {
-			throw new AttributeAccessorException("Accessor for attribute " + attribute + " with type " + type
-					+ " not found");
+			throw new AttributeAccessorException(String.format("Accessor for attribute %s with type %s not found",
+					attribute, type));
 		}
 
 		accessor.run(input, object, attribute, AccessorType.Get);
@@ -87,8 +86,8 @@ class DefaultPojoMarshaller<O> implements Marshaller<O>, Unmarshaller<O> {
 
 		final Accessor<?> accessor = accessorService.resolveAccessor(type);
 		if (accessor == null) {
-			throw new AttributeAccessorException("Accessor for attribute " + attribute + " with type " + type
-					+ " not found");
+			throw new AttributeAccessorException(String.format("Accessor for attribute %s with type %s not found",
+					attribute, type));
 		}
 
 		accessor.run(output, object, attribute, AccessorType.Set);

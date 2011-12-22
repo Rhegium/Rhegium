@@ -3,6 +3,7 @@ package org.rhegium.internal.modules;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.rhegium.internal.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +24,13 @@ public class FrameworkFirewallingClassLoader extends ClassLoader {
 	protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Trying to access " + name);
+			LOG.trace(StringUtils.join(" ", "Trying to access ", name));
 		}
 
 		final String path = name.substring(0, name.lastIndexOf("."));
 		if (!accept(path)) {
 			if (LOG.isTraceEnabled()) {
-				LOG.trace("Access to class " + name + " denied.");
+				LOG.trace(StringUtils.join(" ", "Access to class ", name, " denied."));
 			}
 
 			throw new ClassNotFoundException(name);
@@ -64,7 +65,7 @@ public class FrameworkFirewallingClassLoader extends ClassLoader {
 	}
 
 	private boolean accept(final String path) {
-		if (!path.startsWith("com.yujinserver.")) {
+		if (!path.startsWith("org.rhegium.")) {
 			return true;
 		}
 

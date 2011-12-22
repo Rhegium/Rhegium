@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.rhegium.api.serialization.AttributeAccessorException;
+import org.rhegium.internal.serialization.AccessorType;
 import org.rhegium.internal.serialization.AttributeDescriptor;
 import org.rhegium.internal.serialization.accessor.FieldAccessorStrategyType;
 import org.rhegium.internal.serialization.accessor.FieldPropertyAccessor;
@@ -48,7 +49,7 @@ public abstract class AbstractAccessor<T> implements Accessor<T> {
 
 		// If value if null and attribute is non optional
 		if (value == null && !attribute.isOptional()) {
-			throw new AttributeAccessorException("Cannot serialize null for attribute " + attribute);
+			throw new AttributeAccessorException(String.format("Cannot serialize null for attribute %s", attribute));
 		}
 
 		// At this point attribute would be optional if value is null so just
@@ -61,8 +62,8 @@ public abstract class AbstractAccessor<T> implements Accessor<T> {
 	@SuppressWarnings("unchecked")
 	private void handleGet(Object stream, Object object, AttributeDescriptor attribute) throws IOException {
 		if (attribute.isOptional() && !(stream instanceof InputStream)) {
-			throw new AttributeAccessorException("Cannot deserialize optional attribute " + attribute
-					+ " since stream is no InputStream extending class");
+			throw new AttributeAccessorException(String.format("Cannot deserialize optional attribute %s"
+					+ " since stream is no InputStream extending class", attribute));
 		}
 		final InputStream inputStream = (InputStream) stream;
 		if (attribute.isOptional() && inputStream.available() < attribute.getSerializedSize(inputStream)) {

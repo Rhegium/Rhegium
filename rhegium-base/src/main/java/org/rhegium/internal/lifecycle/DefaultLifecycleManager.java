@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.rhegium.api.lifecycle.LifecycleAware;
 import org.rhegium.api.lifecycle.LifecycleManager;
+import org.rhegium.internal.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -27,19 +28,22 @@ class DefaultLifecycleManager implements LifecycleManager {
 
 	private Calendar calendar;
 
-	DefaultLifecycleManager() throws IOException {                                                                                                                                        
-		try (final InputStream is = LifecycleManager.class.getClassLoader()                                                                                                               
-				.getResourceAsStream("META-INF/version.properties")) {                                                                                                                    
-                                                                                                                                                                                          
-			if (is != null) {                                                                                                                                                             
-				final Properties properties = new Properties();                                                                                                                           
-				properties.load(is);                                                                                                                                                      
-				version = properties.getProperty("com.yujinserver.version");                                                                                                              
-			} else {                                                                                                                                                                      
-				version = "unknown";                                                                                                                                                      
-			}	                                                                                                                                                                          
-		}                                                                                                                                                                                 
-	}	@Override
+	DefaultLifecycleManager() throws IOException {
+		try (final InputStream is = LifecycleManager.class.getClassLoader().getResourceAsStream(
+				"META-INF/version.properties")) {
+
+			if (is != null) {
+				final Properties properties = new Properties();
+				properties.load(is);
+				version = properties.getProperty("org.rhegium.version");
+			}
+			else {
+				version = "unknown";
+			}
+		}
+	}
+
+	@Override
 	public String getUptime() {
 		long uptime = calculateUptime() / 1000;
 
@@ -48,8 +52,7 @@ class DefaultLifecycleManager implements LifecycleManager {
 		final String hours = String.valueOf((uptime /= 60) % 24);
 		final String days = String.valueOf(uptime / 24);
 
-		return new StringBuilder(days).append(" days, ").append(hours).append(" hours, ").append(minutes)
-				.append(" minutes, ").append(seconds).append(" seconds").toString();
+		return StringUtils.join(" ", days, "days,", hours, "hours,", minutes, "minutes,", seconds, "seconds");
 	}
 
 	@Override
