@@ -1,11 +1,15 @@
 package org.rhegium.internal.injector;
 
 import org.rhegium.api.lifecycle.LifecycleAware;
-import org.rhegium.internal.utils.LifecycleUtils;
+import org.rhegium.api.lifecycle.LifecycleManager;
 
+import com.google.inject.Inject;
 import com.google.inject.Key;
 
-public class LifecycleInitializedProvisionInterceptor implements ProvisionInterceptor {
+public class LifecycleProvisionInterceptor implements ProvisionInterceptor {
+
+	@Inject
+	private LifecycleManager lifecycleManager;
 
 	@Override
 	public <T> boolean accept(Key<T> key) {
@@ -14,7 +18,7 @@ public class LifecycleInitializedProvisionInterceptor implements ProvisionInterc
 
 	@Override
 	public <T> T intercept(Key<T> key, T value) {
-		LifecycleUtils.startLifecycleEntity(value);
+		lifecycleManager.registerLifecycleAware((LifecycleAware) value);
 		return value;
 	}
 
