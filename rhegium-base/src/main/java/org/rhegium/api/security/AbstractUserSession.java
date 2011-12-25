@@ -2,6 +2,8 @@ package org.rhegium.api.security;
 
 import java.util.Locale;
 
+import org.rhegium.api.security.authenticator.Authenticator;
+
 public abstract class AbstractUserSession<T> implements UserSession<T> {
 
 	private final T session;
@@ -41,7 +43,7 @@ public abstract class AbstractUserSession<T> implements UserSession<T> {
 	}
 
 	@Override
-	public boolean isLoggedIn() {
+	public boolean isAuthenticated() {
 		return getPrincipal() != null;
 	}
 
@@ -58,6 +60,28 @@ public abstract class AbstractUserSession<T> implements UserSession<T> {
 	@Override
 	public Locale getLocale() {
 		return locale;
+	}
+
+	@Override
+	public Authenticator getAuthenticator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void logout(LogoutListener... logoutListeners) {
+		securityService.setUserSession(buildUnauthenticatedUserSession(session, locale, securityService));
+
+		for (LogoutListener logoutListener : logoutListeners) {
+			logoutListener.sessionInvalidated(this);
+		}
+	}
+
+	private static <T> UserSession<T> buildUnauthenticatedUserSession(T session, Locale locale,
+			SecurityService securityService) {
+
+		return new AbstractUserSession<T>(null, session, locale, securityService) {
+		};
 	}
 
 }

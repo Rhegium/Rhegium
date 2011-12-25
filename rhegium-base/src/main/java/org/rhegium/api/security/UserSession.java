@@ -2,6 +2,8 @@ package org.rhegium.api.security;
 
 import java.util.Locale;
 
+import org.rhegium.api.security.authenticator.Authenticator;
+
 public interface UserSession<T> {
 
 	Principal getPrincipal();
@@ -12,10 +14,14 @@ public interface UserSession<T> {
 
 	boolean isAutoLogin();
 
-	boolean isLoggedIn();
+	boolean isAuthenticated();
 
 	void setLocale(Locale locale);
 
 	Locale getLocale();
+
+	void logout(LogoutListener... logoutListeners);
+
+	Authenticator getAuthenticator();
 
 }

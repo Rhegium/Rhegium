@@ -1,16 +1,25 @@
 package org.rhegium.internal.security;
 
+import org.rhegium.api.security.LoginListener;
+import org.rhegium.api.security.LogoutListener;
 import org.rhegium.api.security.NoPermission;
 import org.rhegium.api.security.Permission;
 import org.rhegium.api.security.PermissionAllowed;
 import org.rhegium.api.security.Principal;
 import org.rhegium.api.security.SecurityService;
 import org.rhegium.api.security.UserSession;
+import org.rhegium.api.security.authenticator.AuthenticationContext;
+import org.rhegium.api.security.authenticator.AuthenticationService;
 import org.rhegium.internal.utils.PermissionsUtils;
+
+import com.google.inject.Inject;
 
 class DefaultSecurityService implements SecurityService {
 
 	private final ThreadLocal<UserSession<?>> userSession = new ThreadLocal<UserSession<?>>();
+
+	@Inject
+	private AuthenticationService authenticationService;
 
 	@Override
 	public boolean permissionAllowed(Permission[] permissions) {
@@ -76,8 +85,29 @@ class DefaultSecurityService implements SecurityService {
 	}
 
 	@Override
-	public UserSession<?> getUserSession() {
-		return userSession.get();
+	@SuppressWarnings("unchecked")
+	public <T> UserSession<T> getUserSession() {
+		return (UserSession<T>) userSession.get();
+	}
+
+	@Override
+	public <T> UserSession<T> login(T session, AuthenticationContext authenticationContext, LoginListener... loginListeners) {
+		UserSession<T> userSession = authenticationService.authenticate(authenticationContext, session);
+		for (LoginListener loginListener : loginListeners) {
+			if (userSession.isAuthenticated()) {
+				loginListener.loginSucceeded(userSession);
+			}
+			else {
+				loginListener.loginFailed(userSession, authenticationContext);
+			}
+		}
+
+		return userSession;
+	}
+
+	@Override
+	public <T> void logout(UserSession<T> userSession, LogoutListener... logoutListeners) {
+		userSession.logout(logoutListeners);
 	}
 
 }
