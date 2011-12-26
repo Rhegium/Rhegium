@@ -36,7 +36,7 @@ public abstract class AbstractController<C, CC extends Controller<C, CC, V>, V e
 	private PermissionResolver permissionResolver;
 
 	@Inject
-	private UiBinderService binderService;
+	private UiBinderService<C> binderService;
 
 	@Inject
 	private Injector injector;

@@ -40,6 +40,7 @@
 		<module>rhegium-base</module>
 		<module>rhegium-mvc</module>
 		<module>rhegium-vaadin</module>
+		<module>rhegium-networking</module>
 	</modules>
 
 	<dependencies>
