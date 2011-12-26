@@ -5,6 +5,7 @@ import java.util.Locale;
 import org.junit.Test;
 import org.rhegium.api.injector.AnnotatedInterfaceMatcher;
 import org.rhegium.api.security.AbstractPermission;
+import org.rhegium.api.security.LogoutListener;
 import org.rhegium.api.security.Permission;
 import org.rhegium.api.security.PermissionDeniedException;
 import org.rhegium.api.security.Principal;
@@ -12,6 +13,7 @@ import org.rhegium.api.security.RequiresPermission;
 import org.rhegium.api.security.SecurityGroup;
 import org.rhegium.api.security.SecurityService;
 import org.rhegium.api.security.UserSession;
+import org.rhegium.api.security.authenticator.Authenticator;
 import org.rhegium.api.security.spi.PermissionResolver;
 import org.rhegium.api.security.spi.PrincipalFactory;
 import org.rhegium.api.security.spi.SecurityGroupResolver;
@@ -68,6 +70,15 @@ public class PermissionTestCase {
 			public Locale getLocale() {
 				return null;
 			}
+
+			@Override
+			public void logout(LogoutListener... logoutListeners) {
+			}
+
+			@Override
+			public Authenticator getAuthenticator() {
+				return null;
+			}
 		});
 
 		TestNoPermission instance = injector.getInstance(TestNoPermission.class);
@@ -115,6 +126,15 @@ public class PermissionTestCase {
 
 			@Override
 			public Locale getLocale() {
+				return null;
+			}
+
+			@Override
+			public void logout(LogoutListener... logoutListeners) {
+			}
+
+			@Override
+			public Authenticator getAuthenticator() {
 				return null;
 			}
 		});
@@ -166,6 +186,15 @@ public class PermissionTestCase {
 			public Locale getLocale() {
 				return null;
 			}
+
+			@Override
+			public void logout(LogoutListener... logoutListeners) {
+			}
+
+			@Override
+			public Authenticator getAuthenticator() {
+				return null;
+			}
 		});
 
 		TestNoPermission instance = injector.getInstance(TestNoPermission.class);
@@ -215,6 +244,15 @@ public class PermissionTestCase {
 			public Locale getLocale() {
 				return null;
 			}
+
+			@Override
+			public void logout(LogoutListener... logoutListeners) {
+			}
+
+			@Override
+			public Authenticator getAuthenticator() {
+				return null;
+			}
 		});
 
 		TestNoPermission instance = injector.getInstance(TestNoPermission.class);
@@ -234,10 +272,9 @@ public class PermissionTestCase {
 			SecurityInterceptor securityInterceptor = new SecurityInterceptor();
 			requestInjection(securityInterceptor);
 
-			bindInterceptor(Matchers.any(), new AnnotatedInterfaceMatcher(RequiresPermission.class),
-					securityInterceptor);
+			bindInterceptor(Matchers.any(), new AnnotatedInterfaceMatcher(RequiresPermission.class), securityInterceptor);
 
-			bind(PrincipalFactory.class).to(RepositoryAccessPrincipalFactory.class).asEagerSingleton();
+			bind(PrincipalFactory.class).to(DefaultPrincipalFactory.class).asEagerSingleton();
 		}
 	}
 
