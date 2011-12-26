@@ -1,4 +1,4 @@
-package org.rhegium.internal.uibinder;
+package org.rhegium.vaadin.internal.mvc;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,6 +11,7 @@ import java.util.Stack;
 
 import org.rhegium.api.mvc.View;
 import org.rhegium.api.typeconverter.TypeConverterManager;
+import org.rhegium.api.uibinder.TargetHandler;
 import org.rhegium.api.uibinder.UiBinderException;
 import org.rhegium.internal.utils.ReflectionUtils;
 
@@ -26,13 +27,13 @@ class ComponentHandler implements TargetHandler {
 	private final Map<Component, Float> expandRatios = new HashMap<Component, Float>();
 
 	private final TypeConverterManager typeConverterManager;
-	private final DefaultUiBinderService binderService;
-	private final View<?, ?> view;
+	private final VaadinUiBinderService binderService;
+	private final View<Component, ?, ?> view;
 	private final Locale locale;
 
 	private Component currentComponent = null;
 
-	ComponentHandler(DefaultUiBinderService binderService, View<?, ?> view, Locale locale,
+	ComponentHandler(VaadinUiBinderService binderService, View<Component, ?, ?> view, Locale locale,
 			TypeConverterManager typeConverterManager) {
 
 		this.typeConverterManager = typeConverterManager;

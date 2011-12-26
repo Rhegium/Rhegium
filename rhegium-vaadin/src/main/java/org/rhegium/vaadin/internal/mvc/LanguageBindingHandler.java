@@ -1,8 +1,9 @@
-package org.rhegium.internal.uibinder;
+package org.rhegium.vaadin.internal.mvc;
 
 import java.util.Locale;
 
 import org.rhegium.api.i18n.LanguageService;
+import org.rhegium.api.uibinder.TargetHandler;
 import org.rhegium.api.uibinder.UiBinderException;
 import org.rhegium.internal.utils.StringUtils;
 

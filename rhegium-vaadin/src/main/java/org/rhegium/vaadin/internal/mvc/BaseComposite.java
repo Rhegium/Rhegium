@@ -1,4 +1,4 @@
-package org.rhegium.internal.uibinder;
+package org.rhegium.vaadin.internal.mvc;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
@@ -18,6 +18,10 @@ class BaseComposite extends VerticalLayout {
 	public void removeComponent(Component c) {
 		super.removeComponent(c);
 		count--;
+	}
+
+	public int getCount() {
+		return count;
 	}
 
 }

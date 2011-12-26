@@ -1,4 +1,4 @@
-package org.rhegium.internal.uibinder;
+package org.rhegium.vaadin.internal.mvc;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.rhegium.api.uibinder.TargetHandler;
 import org.rhegium.api.uibinder.UiBinderException;
 
 import com.vaadin.Application;

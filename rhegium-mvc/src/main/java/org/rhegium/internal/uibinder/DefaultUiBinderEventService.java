@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.rhegium.api.mvc.ComponentController;
+import org.rhegium.api.mvc.Controller;
 import org.rhegium.api.mvc.View;
 import org.rhegium.api.uibinder.EventSubscriber;
 import org.rhegium.api.uibinder.UiBinderEventService;
@@ -18,7 +18,7 @@ class DefaultUiBinderEventService implements UiBinderEventService {
 	private final Map<String, List<Dispatcher>> dispatcherMapping = new HashMap<String, List<Dispatcher>>();
 
 	@Override
-	public void registerComponentController(ComponentController<?, ?> componentController) {
+	public void registerComponentController(Controller<?, ?, ?> componentController) {
 		for (Method method : componentController.getClass().getDeclaredMethods()) {
 			if (Modifier.isStatic(method.getModifiers()) || Modifier.isAbstract(method.getModifiers())
 					|| !method.isAnnotationPresent(EventSubscriber.class)) {
@@ -40,13 +40,13 @@ class DefaultUiBinderEventService implements UiBinderEventService {
 	}
 
 	@Override
-	public void dispatchEvent(View<?, ?> view, String eventName, Object... arguments) {
+	public void dispatchEvent(View<?, ?, ?> view, String eventName, Object... arguments) {
 		List<Dispatcher> dispatchers = dispatcherMapping.get(eventName);
 		if (dispatchers == null || dispatchers.size() == 0) {
 			return;
 		}
 
-		ComponentController<?, ?> componentController = view.getComponentController();
+		Controller<?, ?, ?> componentController = view.getComponentController();
 		for (Dispatcher dispatcher : dispatchers) {
 			if (dispatcher.getComponentController() == componentController) {
 				Method method = dispatcher.getMethod();
@@ -68,15 +68,15 @@ class DefaultUiBinderEventService implements UiBinderEventService {
 
 	private class Dispatcher {
 
-		private final ComponentController<?, ?> componentController;
+		private final Controller<?, ?, ?> componentController;
 		private final Method method;
 
-		Dispatcher(ComponentController<?, ?> componentController, Method method) {
+		Dispatcher(Controller<?, ?, ?> componentController, Method method) {
 			this.componentController = componentController;
 			this.method = method;
 		}
 
-		public ComponentController<?, ?> getComponentController() {
+		public Controller<?, ?, ?> getComponentController() {
 			return componentController;
 		}
 

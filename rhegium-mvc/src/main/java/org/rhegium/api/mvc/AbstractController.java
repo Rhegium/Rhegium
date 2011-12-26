@@ -16,13 +16,12 @@ import org.rhegium.api.uibinder.UiBinderService;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-public abstract class AbstractComponentController<C extends ComponentController<C, B>, B extends View<C, B>> implements
-		ComponentController<C, B> {
+public abstract class AbstractController<C, CC extends Controller<C, CC, V>, V extends View<C, CC, V>> implements
+		Controller<C, CC, V> {
 
 	@SuppressWarnings("unchecked")
-	private static final Collection<Class<? extends Permission>> VISIBLE_TO_ALL = Collections
-			.unmodifiableCollection(Arrays
-					.<Class<? extends Permission>> asList(new Class[] { PermissionAllowed.class }));
+	private static final Collection<Class<? extends Permission>> VISIBLE_TO_ALL = Collections.unmodifiableCollection(Arrays
+			.<Class<? extends Permission>> asList(new Class[] { PermissionAllowed.class }));
 
 	@Inject
 	private SecurityService securityService;
@@ -43,29 +42,29 @@ public abstract class AbstractComponentController<C extends ComponentController<
 	private Injector injector;
 
 	private final Collection<Class<? extends Permission>> permissions;
-	private final Class<? extends B> viewClass;
+	private final Class<? extends V> viewClass;
 	private final boolean multiViewCapable;
 
-	public AbstractComponentController(Class<? extends B> viewClass) {
+	public AbstractController(Class<? extends V> viewClass) {
 		this.viewClass = viewClass;
 		this.permissions = VISIBLE_TO_ALL;
 		this.multiViewCapable = false;
 	}
 
-	public AbstractComponentController(Class<? extends B> viewClass, boolean multiViewCapable) {
+	public AbstractController(Class<? extends V> viewClass, boolean multiViewCapable) {
 		this.viewClass = viewClass;
 		this.permissions = VISIBLE_TO_ALL;
 		this.multiViewCapable = multiViewCapable;
 	}
 
-	public AbstractComponentController(Class<? extends B> viewClass, Collection<Class<? extends Permission>> permissions) {
+	public AbstractController(Class<? extends V> viewClass, Collection<Class<? extends Permission>> permissions) {
 		this.viewClass = viewClass;
 		this.permissions = permissions;
 		this.multiViewCapable = false;
 	}
 
-	public AbstractComponentController(Class<? extends B> viewClass,
-			Collection<Class<? extends Permission>> permissions, boolean multiViewCapable) {
+	public AbstractController(Class<? extends V> viewClass, Collection<Class<? extends Permission>> permissions,
+			boolean multiViewCapable) {
 
 		this.viewClass = viewClass;
 		this.permissions = permissions;
@@ -84,9 +83,9 @@ public abstract class AbstractComponentController<C extends ComponentController<
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public B createView() {
-		B view = injector.getInstance(viewClass);
-		view.setComponentController((C) this);
+	public V createView() {
+		V view = injector.getInstance(viewClass);
+		view.setComponentController((CC) this);
 		binderService.bindView(view, securityService.getUserSession().getLocale());
 		return view;
 	}

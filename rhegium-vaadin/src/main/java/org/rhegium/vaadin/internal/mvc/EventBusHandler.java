@@ -1,10 +1,11 @@
-package org.rhegium.internal.uibinder;
+package org.rhegium.vaadin.internal.mvc;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.rhegium.api.mvc.View;
+import org.rhegium.api.uibinder.TargetHandler;
 import org.rhegium.api.uibinder.UiBinderEventService;
 import org.rhegium.api.uibinder.UiBinderException;
 import org.rhegium.internal.utils.StringUtils;
@@ -85,9 +86,9 @@ class EventBusHandler implements TargetHandler {
 
 	private final ComponentHandler componentHandler;
 	private final UiBinderEventService uiBinderEventService;
-	private final View<?, ?> view;
+	private final View<?, ?, ?> view;
 
-	EventBusHandler(View<?, ?> view, ComponentHandler componentHandler, UiBinderEventService uiBinderEventService) {
+	EventBusHandler(View<?, ?, ?> view, ComponentHandler componentHandler, UiBinderEventService uiBinderEventService) {
 		this.view = view;
 		this.componentHandler = componentHandler;
 		this.uiBinderEventService = uiBinderEventService;
@@ -123,8 +124,8 @@ class EventBusHandler implements TargetHandler {
 			addListener.invoke(component, new DispatchingListenerImpl(uiBinderEventService, eventName));
 		}
 		catch (Exception e) {
-			throw new UiBinderException(String.format("The component %s does not support listeners of type '%s'",
-					component.getClass().getName(), eventType.getClass().getName()));
+			throw new UiBinderException(String.format("The component %s does not support listeners of type '%s'", component
+					.getClass().getName(), eventType.getClass().getName()));
 		}
 	}
 
@@ -133,11 +134,10 @@ class EventBusHandler implements TargetHandler {
 	}
 
 	@SuppressWarnings("serial")
-	private class DispatchingListenerImpl implements Component.ErrorListener,
-			ComponentContainer.ComponentAttachListener, ComponentContainer.ComponentDetachListener,
-			Property.ValueChangeListener, Property.ReadOnlyStatusChangeListener, Container.PropertySetChangeListener,
-			Container.ItemSetChangeListener, FieldEvents.BlurListener, FieldEvents.FocusListener,
-			LayoutEvents.LayoutClickListener, Button.ClickListener, MouseEvents.ClickListener,
+	private class DispatchingListenerImpl implements Component.ErrorListener, ComponentContainer.ComponentAttachListener,
+			ComponentContainer.ComponentDetachListener, Property.ValueChangeListener, Property.ReadOnlyStatusChangeListener,
+			Container.PropertySetChangeListener, Container.ItemSetChangeListener, FieldEvents.BlurListener,
+			FieldEvents.FocusListener, LayoutEvents.LayoutClickListener, Button.ClickListener, MouseEvents.ClickListener,
 			MouseEvents.DoubleClickListener, Item.PropertySetChangeListener, ItemClickEvent.ItemClickListener,
 			Table.ColumnResizeListener, Table.FooterClickListener, Table.HeaderClickListener, Tree.CollapseListener,
 			Tree.ExpandListener, TabSheet.SelectedTabChangeListener, Upload.FailedListener, Upload.FinishedListener,

@@ -1,4 +1,4 @@
-package org.rhegium.internal.uibinder;
+package org.rhegium.api.uibinder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,13 +7,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-class UiBinderSaxHandler extends DefaultHandler {
+public class UiBinderSaxHandler extends DefaultHandler {
 
 	private static final IgnoringTargetHandler IGNORING_TARGET_HANDLER = new IgnoringTargetHandler();
 
 	private final Map<String, TargetHandler> targetHandlers = new HashMap<String, TargetHandler>();
 
-	UiBinderSaxHandler(TargetHandler... targetHandlers) {
+	public UiBinderSaxHandler(TargetHandler... targetHandlers) {
 		this.targetHandlers.put(null, IGNORING_TARGET_HANDLER);
 
 		for (TargetHandler targetHandler : targetHandlers) {

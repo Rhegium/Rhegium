@@ -1,18 +1,15 @@
 package org.rhegium.api.mvc;
 
-import com.vaadin.ui.Window;
+public interface ApplicationLayout<W> {
 
-public interface ApplicationLayout {
+	ApplicationLayout<W> init();
 
-	ApplicationLayout init();
+	void addCategory(MenuCategory<?> category);
 
-	void addCategory(MenuCategory category);
+	<C, CC extends Controller<C, CC, V>, V extends View<C, CC, V>> MenuCategory<?> createMenu(Controller<C, CC, V> controller);
 
-	<C extends ComponentController<C, B>, B extends View<C, B>> MenuCategory createMenu(
-			ComponentController<C, B> controller);
+	void closeView(View<?, ?, ?> view);
 
-	void closeView(View<?, ?> view);
-
-	void addSubWindow(Window subWindow);
+	void addSubWindow(W subWindow);
 
 }

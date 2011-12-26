@@ -2,9 +2,9 @@ package org.rhegium.api.mvc;
 
 import org.rhegium.api.security.Principal;
 
-public interface ComponentController<C extends ComponentController<C, B>, B extends View<C, B>> {
+public interface Controller<C, CC extends Controller<C, CC, V>, V extends View<C, CC, V>> {
 
-	B createView();
+	V createView();
 
 	String getTitle();
 

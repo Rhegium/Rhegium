@@ -1,6 +1,6 @@
-package org.rhegium.internal.uibinder;
+package org.rhegium.api.uibinder;
 
-interface TargetHandler {
+public interface TargetHandler {
 
 	String getTargetNamespace();
 

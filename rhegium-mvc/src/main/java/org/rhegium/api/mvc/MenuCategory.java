@@ -5,20 +5,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.vaadin.ui.VerticalLayout;
+public class MenuCategory<C> {
 
-public class MenuCategory {
-
-	private final List<MenuEntry<?, ?>> menuEntries = new ArrayList<MenuEntry<?, ?>>();
-	private final VerticalLayout content;
+	private final List<MenuEntry<?, ?, ?>> menuEntries = new ArrayList<MenuEntry<?, ?, ?>>();
+	private final C content;
 	private final String title;
 
-	public MenuCategory(VerticalLayout content, String title) {
+	public MenuCategory(C content, String title) {
 		this.content = content;
 		this.title = title;
 	}
 
-	public VerticalLayout getContent() {
+	public C getContent() {
 		return content;
 	}
 
@@ -26,11 +24,11 @@ public class MenuCategory {
 		return title;
 	}
 
-	public void addMenuEntry(MenuEntry<?, ?> menuEntry) {
+	public void addMenuEntry(MenuEntry<?, ?, ?> menuEntry) {
 		menuEntries.add(menuEntry);
 	}
 
-	public Collection<MenuEntry<?, ?>> getMenuEntries() {
+	public Collection<MenuEntry<?, ?, ?>> getMenuEntries() {
 		return Collections.unmodifiableCollection(menuEntries);
 	}
 
@@ -50,7 +48,7 @@ public class MenuCategory {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		MenuCategory other = (MenuCategory) obj;
+		MenuCategory<?> other = (MenuCategory<?>) obj;
 		if (title == null) {
 			if (other.title != null)
 				return false;

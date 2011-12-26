@@ -5,23 +5,17 @@ import java.util.Map;
 
 import org.rhegium.api.uibinder.InjectUi;
 
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
-
-public abstract class AbstractBindableView<C extends ComponentController<C, B>, B extends View<C, B>> extends
-		AbstractView<C, B> {
+public abstract class AbstractBindableView<C, CC extends Controller<C, CC, V>, V extends View<C, CC, V>> extends
+		AbstractView<C, CC, V> {
 
 	@InjectUi("$$abstractBindableViewComponents$$")
-	private Map<String, Component> abstractBindableViewComponents = new HashMap<String, Component>();
+	private Map<String, C> abstractBindableViewComponents = new HashMap<String, C>();
 
 	@Override
-	protected final AbstractComponent buildComponent() {
-		return new VerticalLayout();
-	}
+	protected abstract C buildComponent();
 
 	@SuppressWarnings("unchecked")
-	public <COMPONENT extends Component> COMPONENT findByName(String name) {
+	public <COMPONENT extends C> COMPONENT findByName(String name) {
 		return (COMPONENT) abstractBindableViewComponents.get(name);
 	}
 

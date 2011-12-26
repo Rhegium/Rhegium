@@ -19,8 +19,8 @@ import com.google.inject.multibindings.Multibinder;
 public class MvcModule extends AbstractModule {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MvcModule.class);
-	private static Collection<Class<? extends ComponentController<?, ?>>> COMPONENT_CONTROLLERS = new ArrayList<Class<? extends ComponentController<?, ?>>>();
-	private static Collection<Class<? extends View<?, ?>>> VIEWS = new ArrayList<Class<? extends View<?, ?>>>();
+	private static Collection<Class<? extends Controller<?, ?, ?>>> COMPONENT_CONTROLLERS = new ArrayList<Class<? extends Controller<?, ?, ?>>>();
+	private static Collection<Class<? extends View<?, ?, ?>>> VIEWS = new ArrayList<Class<? extends View<?, ?, ?>>>();
 
 	static {
 		reloadClassPool();
@@ -29,27 +29,26 @@ public class MvcModule extends AbstractModule {
 	@Override
 	@SuppressWarnings("rawtypes")
 	protected void configure() {
-		Multibinder<ComponentController> binder = Multibinder.newSetBinder(binder(), ComponentController.class);
+		Multibinder<Controller> binder = Multibinder.newSetBinder(binder(), Controller.class);
 
-		for (Class<? extends ComponentController<?, ?>> componentController : COMPONENT_CONTROLLERS) {
+		for (Class<? extends Controller<?, ?, ?>> componentController : COMPONENT_CONTROLLERS) {
 			binder.addBinding().to(componentController).in(Singleton.class);
 		}
 
-		for (Class<? extends View<?, ?>> view : VIEWS) {
+		for (Class<? extends View<?, ?, ?>> view : VIEWS) {
 			bind(view);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Collection<Class<? extends ComponentController<?, ?>>> findComponentControllers(
-			final ClassPool classPool) {
+	private static Collection<Class<? extends Controller<?, ?, ?>>> findComponentControllers(final ClassPool classPool) {
 
 		LOG.info("Searching available ComponentControllers...");
 		ClassQuery query = new ClassQueryBuilder() {
 
 			@Override
 			protected ClassAttributeConstraintSelector configure() {
-				return where().subclassOf(AbstractComponentController.class.getCanonicalName());
+				return where().subclassOf(AbstractController.class.getCanonicalName());
 			}
 		}.build();
 
@@ -58,11 +57,11 @@ public class MvcModule extends AbstractModule {
 		}
 
 		Collection<ClassInfo> classInfos = query.list(classPool);
-		Collection<Class<? extends ComponentController<?, ?>>> classes = new ArrayList<Class<? extends ComponentController<?, ?>>>();
+		Collection<Class<? extends Controller<?, ?, ?>>> classes = new ArrayList<Class<? extends Controller<?, ?, ?>>>();
 		for (ClassInfo classInfo : classInfos) {
 			try {
 				LOG.info("\tFound ComponentController " + classInfo.getCanonicalName());
-				classes.add((Class<? extends ComponentController<?, ?>>) Class.forName(classInfo.getCanonicalName()));
+				classes.add((Class<? extends Controller<?, ?, ?>>) Class.forName(classInfo.getCanonicalName()));
 			}
 			catch (Exception e) {
 				LOG.warn("Class " + classInfo.getCanonicalName() + " not found");
@@ -73,13 +72,13 @@ public class MvcModule extends AbstractModule {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Collection<Class<? extends View<?, ?>>> findViews(final ClassPool classPool) {
+	private static Collection<Class<? extends View<?, ?, ?>>> findViews(final ClassPool classPool) {
 		LOG.info("Searching available Views...");
 		ClassQuery query = new ClassQueryBuilder() {
 
 			@Override
 			protected ClassAttributeConstraintSelector configure() {
-				return where().subclassOf(AbstractComponentController.class.getCanonicalName());
+				return where().subclassOf(AbstractController.class.getCanonicalName());
 			}
 		}.build();
 
@@ -88,11 +87,11 @@ public class MvcModule extends AbstractModule {
 		}
 
 		Collection<ClassInfo> classInfos = query.list(classPool);
-		Collection<Class<? extends View<?, ?>>> classes = new ArrayList<Class<? extends View<?, ?>>>();
+		Collection<Class<? extends View<?, ?, ?>>> classes = new ArrayList<Class<? extends View<?, ?, ?>>>();
 		for (ClassInfo classInfo : classInfos) {
 			try {
 				LOG.info("\tFound View " + classInfo.getCanonicalName());
-				classes.add((Class<? extends View<?, ?>>) Class.forName(classInfo.getCanonicalName()));
+				classes.add((Class<? extends View<?, ?, ?>>) Class.forName(classInfo.getCanonicalName()));
 			}
 			catch (Exception e) {
 				LOG.warn("Class " + classInfo.getCanonicalName() + " not found");

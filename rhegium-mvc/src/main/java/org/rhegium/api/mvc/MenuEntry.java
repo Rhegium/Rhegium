@@ -1,23 +1,21 @@
 package org.rhegium.api.mvc;
 
-import com.vaadin.ui.Label;
+public abstract class MenuEntry<C, CC extends Controller<C, CC, V>, V extends View<C, CC, V>> {
 
-public class MenuEntry<C extends ComponentController<C, B>, B extends View<C, B>> {
-
-	private final MenuCategory category;
-	private final C controller;
-	private final Label label;
+	private final MenuCategory<?> category;
+	private final CC controller;
+	private final C label;
 	private final String title;
 
-	public MenuEntry(C controller, MenuCategory category) {
+	public MenuEntry(CC controller, MenuCategory<?> category) {
 		this.controller = controller;
 		this.category = category;
 
-		this.label = new Label(controller.getTitle());
+		this.label = buildLabel(controller.getTitle());
 		this.title = controller.getTitle();
 	}
 
-	public MenuCategory getCategory() {
+	public MenuCategory<?> getCategory() {
 		return category;
 	}
 
@@ -25,12 +23,14 @@ public class MenuEntry<C extends ComponentController<C, B>, B extends View<C, B>
 		return title;
 	}
 
-	public C getController() {
+	public CC getController() {
 		return controller;
 	}
 
-	public Label getLabel() {
+	public C getLabel() {
 		return label;
 	}
+
+	protected abstract C buildLabel(String title);
 
 }

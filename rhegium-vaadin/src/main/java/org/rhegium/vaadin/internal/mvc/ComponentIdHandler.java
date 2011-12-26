@@ -1,8 +1,9 @@
-package org.rhegium.internal.uibinder;
+package org.rhegium.vaadin.internal.mvc;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.rhegium.api.uibinder.TargetHandler;
 import org.rhegium.api.uibinder.UiBinderException;
 import org.rhegium.internal.utils.StringUtils;
 

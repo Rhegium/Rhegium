@@ -2,7 +2,7 @@ package org.rhegium.api.mvc;
 
 public interface ViewManager {
 
-	void close(View<?, ?> view);
+	void close(View<?, ?, ?> view);
 
 	void showMsg(String msg);
 
@@ -10,6 +10,6 @@ public interface ViewManager {
 
 	void showError(String error);
 
-	ApplicationLayout getApplicationWindow();
+	ApplicationLayout<?> getApplicationWindow();
 
 }

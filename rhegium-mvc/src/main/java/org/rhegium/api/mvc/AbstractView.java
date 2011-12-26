@@ -4,37 +4,22 @@ import org.rhegium.api.security.SecurityService;
 import org.rhegium.api.security.UserSession;
 
 import com.google.inject.Inject;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.VerticalLayout;
 
-public abstract class AbstractView<C extends ComponentController<C, B>, B extends View<C, B>> implements View<C, B> {
+public abstract class AbstractView<C, CC extends Controller<C, CC, V>, V extends View<C, CC, V>> implements View<C, CC, V> {
 
 	@Inject
 	private SecurityService securityService;
 
-	private C componentController;
-	private VerticalLayout layout;
+	private CC componentController;
 
 	@Override
-	public void setComponentController(C componentController) {
+	public void setComponentController(CC componentController) {
 		this.componentController = componentController;
 	}
 
 	@Override
-	public C getComponentController() {
+	public CC getComponentController() {
 		return componentController;
-	}
-
-	@Override
-	public synchronized final AbstractComponent getComponent() {
-		if (layout == null) {
-			layout = new VerticalLayout();
-			layout.setSizeFull();
-			layout.setMargin(true);
-			layout.addComponent(buildComponent());
-		}
-
-		return layout;
 	}
 
 	@Override
@@ -48,6 +33,6 @@ public abstract class AbstractView<C extends ComponentController<C, B>, B extend
 		return false;
 	}
 
-	protected abstract AbstractComponent buildComponent();
+	protected abstract C buildComponent();
 
 }

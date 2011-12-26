@@ -2,15 +2,13 @@ package org.rhegium.api.mvc;
 
 import org.rhegium.api.uibinder.UiBindable;
 
-import com.vaadin.ui.AbstractComponent;
+public interface View<C, CC extends Controller<C, CC, V>, V extends View<C, CC, V>> extends UiBindable {
 
-public interface View<C extends ComponentController<C, B>, B extends View<C, B>> extends UiBindable {
+	void setComponentController(CC componentController);
 
-	void setComponentController(C componentController);
+	CC getComponentController();
 
-	C getComponentController();
-
-	AbstractComponent getComponent();
+	C getComponent();
 
 	boolean isVisible();
 
