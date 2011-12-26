@@ -41,6 +41,7 @@
 		<module>rhegium-mvc</module>
 		<module>rhegium-vaadin</module>
 		<module>rhegium-networking</module>
+		<module>rhegium-validation</module>
 	</modules>
 
 	<dependencies>

@@ -2,12 +2,13 @@ package org.rhegium.vaadin.api.mvc;
 
 import org.rhegium.api.mvc.AbstractView;
 import org.rhegium.api.mvc.Controller;
+import org.rhegium.api.mvc.View;
 
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.VerticalLayout;
 
-public abstract class AbstractVaadinView<CC extends Controller<AbstractComponent, CC, V>, V extends VaadinView<CC, V>> extends
-		AbstractView<AbstractComponent, CC, V> {
+public abstract class AbstractVaadinView<CC extends Controller<AbstractComponent, CC, V>, V extends View<AbstractComponent, CC, V>>
+		extends AbstractView<AbstractComponent, CC, V> {
 
 	private VerticalLayout layout;
 
