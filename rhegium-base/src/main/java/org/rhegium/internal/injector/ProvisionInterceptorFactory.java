@@ -98,16 +98,10 @@ public final class ProvisionInterceptorFactory {
 				return super.visit(binding);
 			}
 
-			binding.acceptTargetVisitor(new DefaultBindingTargetVisitor<T, Void>() {
-
-				@Override
-				public Void visit(UntargettedBinding<? extends T> untargettedBinding) {
-					binder.addError("Cannot intercept bare binding of %s. "
-							+ "You may only intercept bindings that bind a class to something.", key);
-					return null;
-				}
-			});
-
+			if (binding instanceof UntargettedBinding) {
+				return null;
+			}
+			
 			Key<T> anonymousKey = Key.get(key.getTypeLiteral(), UniqueAnnotations.create());
 			binder.bind(key).toProvider(new ProvisionInterceptorProvider<T>(key, binder.getProvider(anonymousKey)));
 
@@ -117,8 +111,7 @@ public final class ProvisionInterceptorFactory {
 			return null;
 		}
 
-		private <T> ScopedBindingBuilder redirectKeyToTarget(final Binding<T> binding, final Binder binder,
-				final Key<T> key) {
+		private <T> ScopedBindingBuilder redirectKeyToTarget(final Binding<T> binding, final Binder binder, final Key<T> key) {
 			return binding.acceptTargetVisitor(new DefaultBindingTargetVisitor<T, ScopedBindingBuilder>() {
 
 				@Override

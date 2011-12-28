@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium.api.lifecycle;
+package org.rhegium.internal.i18n;
 
-import java.util.Collection;
-import java.util.Date;
+import org.rhegium.api.i18n.LanguageService;
 
-import org.rhegium.api.Service;
+import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 
-public interface LifecycleManager extends Service {
+public class LanguageModule extends AbstractModule {
 
-	void registerLifecycleAware(LifecycleAware lifecycleAware);
-
-	void removeLifecycleAware(LifecycleAware lifecycleAware);
-
-	Collection<LifecycleAware> getLifecycleAwares();
-
-	void shutdown(long timeout) throws Exception;
-
-	String getUptime();
-
-	Date getStartTime();
-
-	String getVersion();
+	@Override
+	protected void configure() {
+		bind(LanguageService.class).to(DefaultLanguageService.class).in(Singleton.class);
+	}
 
 }

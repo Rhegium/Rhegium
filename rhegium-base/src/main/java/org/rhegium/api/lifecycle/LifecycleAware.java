@@ -17,10 +17,10 @@ package org.rhegium.api.lifecycle;
 
 public interface LifecycleAware {
 
-	void initialized();
+	void initialized() throws Exception;
 
-	void start();
+	void start() throws Exception;
 
-	void shutdown();
+	void shutdown() throws Exception;
 
 }

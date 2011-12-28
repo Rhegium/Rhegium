@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium.internal.bootstrap;
+package org.rhegium.api.bootstrap;
 
 import java.io.File;
 import java.io.FileReader;
@@ -32,7 +32,6 @@ import java.util.Properties;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
-import org.rhegium.api.bootstrap.Bootstrapper;
 import org.rhegium.api.lifecycle.LifecycleManager;
 import org.rhegium.api.modules.FrameworkPlugin;
 import org.rhegium.api.modules.PluginDependency;
@@ -50,13 +49,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.name.Names;
 
-public class DefaultBootstrapper implements Bootstrapper {
+public abstract class AbstractBootstrapper implements Bootstrapper {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultBootstrapper.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractBootstrapper.class);
 
 	private static final String STANDARD_CONFIGURATION_FOLDER = "conf";
 
@@ -71,9 +72,12 @@ public class DefaultBootstrapper implements Bootstrapper {
 	private FrameworkFirewallingClassLoader firewallingClassLoader;
 
 	@Override
-	public void start(ClassLoader classLoader) throws Exception {
+	public void start(String[] args, ClassLoader classLoader) throws Exception {
 		// Deactivate java.util.logging
 		deactivateJULI();
+
+		// Prepare startup
+		preStartup(args);
 
 		// Read properties
 		final Properties properties = loadProperties();
@@ -85,8 +89,7 @@ public class DefaultBootstrapper implements Bootstrapper {
 				PROPERTIES_BOOTSTRAP_PRIVILEGED_PACKAGES));
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("Actual ClassLoader Hierarchy: "
-					+ ReflectionUtils.buildClassLoaderHierachy(firewallingClassLoader));
+			LOG.debug("Actual ClassLoader Hierarchy: " + ReflectionUtils.buildClassLoaderHierachy(firewallingClassLoader));
 		}
 
 		final File pluginPath = findPluginsPath(properties);
@@ -94,8 +97,7 @@ public class DefaultBootstrapper implements Bootstrapper {
 
 		// Find all plugins
 		final Collection<ResolvablePluginDependency> pluginDescriptors = PluginContextHelper
-				.precheckAndReorderPluginDescriptors(buildPluginDescriptors(firewallingClassLoader, pluginPath,
-						workPath));
+				.precheckAndReorderPluginDescriptors(buildPluginDescriptors(firewallingClassLoader, pluginPath, workPath));
 
 		// Add buddy classloaders
 		addBuddyClassLoaders(pluginDescriptors);
@@ -133,9 +135,22 @@ public class DefaultBootstrapper implements Bootstrapper {
 			}
 		}
 
+		// Bind configuration path
+		modules.add(new AbstractModule() {
+
+			@Override
+			protected void configure() {
+				bindConstant().annotatedWith(Names.named("configurationBase")).to(
+						new File(STANDARD_CONFIGURATION_FOLDER).getAbsolutePath());
+			}
+		});
+
 		// Building Guice injector and retrieve the implementation instance of
 		// ILifecycleManager to start it up
 		final Injector injector = Guice.createInjector(new ProvisionInterceptorFactory().install(modules).build());
+
+		// Inject yourself to fulfill possible needs in post startup code
+		injector.injectMembers(this);
 
 		// Get PluginManager
 		final PluginManager pluginManager = injector.getInstance(PluginManager.class);
@@ -154,11 +169,18 @@ public class DefaultBootstrapper implements Bootstrapper {
 
 		// Startup framework
 		LOG.info("Initialize plugins...");
-		lifecycleManager.initialize();
+		lifecycleManager.initialized();
 
 		LOG.info("Startup plugins...");
-		lifecycleManager.startup();
+		lifecycleManager.start();
+
+		// Final steps after framework startup
+		postStartup();
 	}
+
+	protected abstract void preStartup(String[] args) throws Exception;
+
+	protected abstract void postStartup() throws Exception;
 
 	private void deactivateJULI() {
 		if (LOG.isDebugEnabled()) {
@@ -182,8 +204,7 @@ public class DefaultBootstrapper implements Bootstrapper {
 	}
 
 	private File findPluginsPath(final Properties properties) {
-		final String pluginsFolder = getProperty(properties, PROPERTIES_BOOTSTRAP_PLUGIN_FOLDER,
-				STANDARD_PLUGIN_LIBRARY_FOLDER);
+		final String pluginsFolder = getProperty(properties, PROPERTIES_BOOTSTRAP_PLUGIN_FOLDER, STANDARD_PLUGIN_LIBRARY_FOLDER);
 
 		final File pluginPath = new File(pluginsFolder);
 		if (!pluginPath.exists() && !pluginPath.isDirectory()) {
@@ -193,8 +214,8 @@ public class DefaultBootstrapper implements Bootstrapper {
 		return pluginPath;
 	}
 
-	private List<ResolvablePluginDependency> buildPluginDescriptors(final ClassLoader classLoader,
-			final File pluginPath, final File workPath) {
+	private List<ResolvablePluginDependency> buildPluginDescriptors(final ClassLoader classLoader, final File pluginPath,
+			final File workPath) {
 
 		return AccessController.doPrivileged(new PrivilegedAction<List<ResolvablePluginDependency>>() {
 
@@ -204,8 +225,7 @@ public class DefaultBootstrapper implements Bootstrapper {
 
 				final List<ResolvablePluginDependency> pluginDescriptors = new ArrayList<ResolvablePluginDependency>();
 				for (final File child : pluginPath.listFiles()) {
-					final PluginDescriptor pluginDescriptor = PluginContextHelper.buildPluginDescriptor(child,
-							workPath, classLoader);
+					PluginDescriptor pluginDescriptor = PluginContextHelper.buildPluginDescriptor(child, workPath, classLoader);
 
 					if (pluginDescriptor != null) {
 						LOG.info(StringUtils.join(" ", "Found plugin '", pluginDescriptor.getName(), "' in path ",
@@ -255,8 +275,8 @@ public class DefaultBootstrapper implements Bootstrapper {
 		final File workPath = new File(workFolder);
 		if (workPath.exists()) {
 			if (!workPath.isDirectory()) {
-				throw new IllegalArgumentException(StringUtils.join(" ", PROPERTIES_BOOTSTRAP_WORK_FOLDER,
-						" must be a directory"));
+				throw new IllegalArgumentException(
+						StringUtils.join(" ", PROPERTIES_BOOTSTRAP_WORK_FOLDER, " must be a directory"));
 			}
 
 			// Delete old work directory

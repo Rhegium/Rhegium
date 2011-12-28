@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium.internal.i18n;
+package org.rhegium.internal.security;
 
-import org.rhegium.api.i18n.LanguageService;
+import org.rhegium.api.security.SecurityService;
+import org.rhegium.api.security.spi.PermissionFactory;
+import org.rhegium.api.security.spi.PrincipalFactory;
+import org.rhegium.api.security.spi.SecurityGroupFactory;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 
-public class LanguageServiceModule extends AbstractModule {
+public class SecurityModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(LanguageService.class).to(DefaultLanguageService.class).asEagerSingleton();
+		bind(SecurityService.class).to(DefaultSecurityService.class).in(Singleton.class);
+
+		bind(PermissionFactory.class).to(DefaultPermissionFactory.class).in(Singleton.class);
+		bind(PrincipalFactory.class).to(DefaultPrincipalFactory.class).in(Singleton.class);
+		bind(SecurityGroupFactory.class).to(DefaultSecurityGroupFactory.class).in(Singleton.class);
 	}
 
 }

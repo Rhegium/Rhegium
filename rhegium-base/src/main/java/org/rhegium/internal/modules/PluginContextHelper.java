@@ -39,18 +39,20 @@ public final class PluginContextHelper {
 
 	private static final Logger LOG = Logger.getLogger(PluginContextHelper.class);
 
-	private static final FluentBuilder<PluginLyciaContextObject> BUILDER = FluentBuilder
-			.<PluginLyciaContextObject> prepare().parser(FluentBuilder.pojoParser(new PluginXmlLyciaParser()))
-			.configure(FluentBuilder.validateSchema(false));
+	private static final FluentBuilder<PluginLyciaContextObject> BUILDER = FluentBuilder.<PluginLyciaContextObject> prepare()
+			.parser(FluentBuilder.pojoParser(new PluginXmlLyciaParser())).configure(FluentBuilder.validateSchema(false));
 
 	private PluginContextHelper() {
 	}
 
-	public static final PluginClassLoader buildPluginClassLoader(final File pluginPath, final File workPath,
-			final ClassLoader parent) {
-
+	public static final PluginClassLoader buildPluginClassLoader(File pluginPath, File workPath, ClassLoader parent) {
 		try {
-			return new PluginClassLoader(findAllPluginJars(pluginPath, workPath), parent);
+			URL[] urls = findAllPluginJars(pluginPath, workPath);
+			if (urls == null) {
+				return null;
+			}
+
+			return new PluginClassLoader(urls, parent);
 
 		}
 		catch (final IOException e) {
@@ -58,15 +60,16 @@ public final class PluginContextHelper {
 		}
 	}
 
-	public static final PluginDescriptor buildPluginDescriptor(final File pluginPath, final File workPath,
-			final ClassLoader parent) {
-
+	public static final PluginDescriptor buildPluginDescriptor(File pluginPath, File workPath, ClassLoader parent) {
 		final PluginClassLoader pluginClassLoader = buildPluginClassLoader(pluginPath, workPath, parent);
+		if (pluginClassLoader == null) {
+			return null;
+		}
 
 		final PluginLyciaContextObject contextObject = new PluginLyciaContextObject(pluginClassLoader);
 
-		final LyciaParser<PluginLyciaContextObject> parser = BUILDER.configure(
-				FluentBuilder.contextObject(contextObject)).build();
+		final LyciaParser<PluginLyciaContextObject> parser = BUILDER.configure(FluentBuilder.contextObject(contextObject))
+				.build();
 
 		try (final InputStream is = pluginClassLoader.getResourceAsStream("META-INF/rhegium-plugin.xml")) {
 			parser.parse(is);
@@ -107,7 +110,6 @@ public final class PluginContextHelper {
 	}
 
 	public static final URL[] findAllPluginJars(final File pluginPath, final File workPath) throws IOException {
-
 		if (pluginPath == null) {
 			throw new IllegalArgumentException("PluginPath cannot be null");
 		}
@@ -119,6 +121,7 @@ public final class PluginContextHelper {
 
 				return new URL[] { pluginPath.toURI().toURL() };
 			}
+			else
 
 			if (filename.endsWith(".zip")) {
 				LOG.info("Deploy plugin from ZIP file " + pluginPath.getAbsolutePath());
@@ -126,8 +129,7 @@ public final class PluginContextHelper {
 				final File deploymentPath = new File(workPath, filename);
 				if (deploymentPath.exists()) {
 					throw new IllegalStateException(StringUtils.join(" ", "Deployment directory '",
-							deploymentPath.getAbsolutePath(), "' cannot exists - Is there ",
-							"some other instance running?"));
+							deploymentPath.getAbsolutePath(), "' cannot exists - Is there ", "some other instance running?"));
 				}
 
 				deploymentPath.mkdirs();
@@ -136,6 +138,8 @@ public final class PluginContextHelper {
 				final List<URL> jars = findAllPluginJars0(deploymentPath);
 				return jars.toArray(new URL[jars.size()]);
 			}
+
+			return null;
 		}
 
 		LOG.info("Deploy plugin from directory " + pluginPath.getAbsolutePath());
@@ -145,7 +149,6 @@ public final class PluginContextHelper {
 	}
 
 	private static void extractZipToFolder(final File pluginPath, final File deploymentPath) throws IOException {
-
 		final ZipFile zipFile = new ZipFile(pluginPath);
 		final Enumeration<? extends ZipEntry> entries = zipFile.entries();
 		while (entries.hasMoreElements()) {
@@ -215,7 +218,6 @@ public final class PluginContextHelper {
 			for (final ResolvablePluginDependency descriptor : ids) {
 				if (descriptor.getId().equals(pluginDescriptor.getId())) {
 					if (descriptor.getPluginClass().equals(pluginDescriptor.getPluginClass())) {
-
 						LOG.warn(StringUtils.join(" ", "Found same plugin descriptor '", pluginDescriptor.getId(),
 								"' in multiple classloaders..."));
 

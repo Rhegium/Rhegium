@@ -18,15 +18,15 @@ package org.rhegium.api;
 public abstract class AbstractService implements Service {
 
 	@Override
-	public void initialized() {
+	public void initialized() throws Exception {
 	}
 
 	@Override
-	public void start() {
+	public void start() throws Exception {
 	}
 
 	@Override
-	public void shutdown() {
+	public void shutdown() throws Exception {
 	}
 
 	@Override

@@ -25,18 +25,25 @@ import org.rhegium.api.i18n.LanguageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 public class DefaultLanguageService implements LanguageService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultLanguageService.class);
 
-	private static final String RESOURCE_BUNDLE_BASE_NAME = "de.heldenreich.wcc.Messages";
 	private static final Locale FALLBACK_LANGUAGE_ISO = Locale.GERMAN;
 
 	private final Map<String, ResourceBundle> resourceBundles = new HashMap<String, ResourceBundle>();
 
-	public DefaultLanguageService() {
+	private final String languageBundleName;
+
+	@Inject
+	public DefaultLanguageService(@Named("LanguageBundleName") String languageBundleName) {
 		resourceBundles.put(FALLBACK_LANGUAGE_ISO.getISO3Language(),
-				ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE_NAME, FALLBACK_LANGUAGE_ISO));
+				ResourceBundle.getBundle(languageBundleName, FALLBACK_LANGUAGE_ISO));
+
+		this.languageBundleName = languageBundleName;
 	}
 
 	@Override
@@ -54,7 +61,7 @@ public class DefaultLanguageService implements LanguageService {
 		ResourceBundle bundle = resourceBundles.get(locale.getISO3Language());
 		if (bundle == null) {
 			try {
-				bundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE_NAME, locale);
+				bundle = ResourceBundle.getBundle(languageBundleName, locale);
 				resourceBundles.put(locale.getISO3Language(), bundle);
 			}
 			catch (MissingResourceException e) {

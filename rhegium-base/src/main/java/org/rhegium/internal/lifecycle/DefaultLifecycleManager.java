@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.rhegium.api.AbstractService;
 import org.rhegium.api.lifecycle.LifecycleAware;
 import org.rhegium.api.lifecycle.LifecycleManager;
 import org.rhegium.internal.utils.StringUtils;
@@ -33,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-class DefaultLifecycleManager implements LifecycleManager {
+class DefaultLifecycleManager extends AbstractService implements LifecycleManager {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LifecycleManager.class);
 
@@ -44,8 +45,7 @@ class DefaultLifecycleManager implements LifecycleManager {
 	private Calendar calendar;
 
 	DefaultLifecycleManager() throws IOException {
-		try (final InputStream is = LifecycleManager.class.getClassLoader().getResourceAsStream(
-				"META-INF/version.properties")) {
+		try (final InputStream is = LifecycleManager.class.getClassLoader().getResourceAsStream("META-INF/version.properties")) {
 
 			if (is != null) {
 				final Properties properties = new Properties();
@@ -96,7 +96,7 @@ class DefaultLifecycleManager implements LifecycleManager {
 	}
 
 	@Override
-	public void initialize() throws Exception {
+	public void initialized() throws Exception {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook(this));
 
 		calendar = Calendar.getInstance();
@@ -105,7 +105,7 @@ class DefaultLifecycleManager implements LifecycleManager {
 	}
 
 	@Override
-	public void startup() throws Exception {
+	public void start() throws Exception {
 		notifyOnStartup();
 
 		LOG.info("Startup successfully completed...");
@@ -140,7 +140,7 @@ class DefaultLifecycleManager implements LifecycleManager {
 		return endL - startL;
 	}
 
-	private void notifyOnInitialize() {
+	private void notifyOnInitialize() throws Exception {
 		final Iterator<LifecycleAware> iterator = lifecycleAwares.iterator();
 
 		while (iterator.hasNext()) {
@@ -148,7 +148,7 @@ class DefaultLifecycleManager implements LifecycleManager {
 		}
 	}
 
-	private void notifyOnStartup() {
+	private void notifyOnStartup() throws Exception {
 		final Iterator<LifecycleAware> iterator = lifecycleAwares.iterator();
 
 		while (iterator.hasNext()) {
@@ -156,7 +156,7 @@ class DefaultLifecycleManager implements LifecycleManager {
 		}
 	}
 
-	private void notifyOnShutdown() {
+	private void notifyOnShutdown() throws Exception {
 		final Iterator<LifecycleAware> iterator = lifecycleAwares.iterator();
 
 		while (iterator.hasNext()) {

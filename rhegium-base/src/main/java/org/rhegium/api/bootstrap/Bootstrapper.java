@@ -17,6 +17,6 @@ package org.rhegium.api.bootstrap;
 
 public interface Bootstrapper {
 
-	void start(ClassLoader classLoader) throws Exception;
+	void start(String[] args, ClassLoader classLoader) throws Exception;
 
 }

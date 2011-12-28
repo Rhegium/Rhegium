@@ -17,15 +17,19 @@ package org.rhegium.internal.utils;
 
 import org.rhegium.api.lifecycle.LifecycleAware;
 import org.rhegium.api.lifecycle.LifecycleManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Injector;
 
 public final class LifecycleUtils {
 
+	private static final Logger LOG = LoggerFactory.getLogger(LifecycleUtils.class);
+
 	private LifecycleUtils() {
 	}
 
-	public static <T> T startLifecycleEntity(T entity, Injector injector) {
+	public static <T> T startLifecycleEntity(T entity, Injector injector) throws Exception {
 		injector.injectMembers(entity);
 
 		if (isLifecycleAware(entity)) {
@@ -36,7 +40,7 @@ public final class LifecycleUtils {
 		return startLifecycleEntity(entity);
 	}
 
-	public static <T> T startLifecycleEntity(T entity) {
+	public static <T> T startLifecycleEntity(T entity) throws Exception {
 		notifyInitialized(entity);
 		notifyStartup(entity);
 		return entity;
@@ -46,13 +50,13 @@ public final class LifecycleUtils {
 		notifyShutdown(entity);
 	}
 
-	private static void notifyInitialized(Object value) {
+	private static void notifyInitialized(Object value) throws Exception {
 		if (isLifecycleAware(value)) {
 			((LifecycleAware) value).initialized();
 		}
 	}
 
-	private static void notifyStartup(Object value) {
+	private static void notifyStartup(Object value) throws Exception {
 		if (isLifecycleAware(value)) {
 			((LifecycleAware) value).start();
 		}
@@ -60,7 +64,12 @@ public final class LifecycleUtils {
 
 	private static void notifyShutdown(Object value) {
 		if (isLifecycleAware(value)) {
-			((LifecycleAware) value).shutdown();
+			try {
+				((LifecycleAware) value).shutdown();
+			}
+			catch (Exception e) {
+				LOG.error("LifecycleAware.shutdown failed", e);
+			}
 		}
 	}
 

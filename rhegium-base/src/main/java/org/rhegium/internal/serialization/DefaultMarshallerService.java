@@ -33,12 +33,21 @@ class DefaultMarshallerService implements MarshallerService {
 
 	@Override
 	public <T> Marshaller<T> createMarshaller() {
-		return LifecycleUtils.startLifecycleEntity(new DefaultPojoMarshaller<T>(), injector);
+		return buildPojoMarshaller();
 	}
 
 	@Override
 	public <T> Unmarshaller<T> createUnmarshaller() {
-		return LifecycleUtils.startLifecycleEntity(new DefaultPojoMarshaller<T>(), injector);
+		return buildPojoMarshaller();
+	}
+
+	private <T> DefaultPojoMarshaller<T> buildPojoMarshaller() {
+		try {
+			return LifecycleUtils.startLifecycleEntity(new DefaultPojoMarshaller<T>(), injector);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

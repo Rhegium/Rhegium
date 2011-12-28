@@ -13,27 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium.api.lifecycle;
+package org.rhegium.internal.security;
 
-import java.util.Collection;
-import java.util.Date;
+import com.google.inject.AbstractModule;
 
-import org.rhegium.api.Service;
+public class SecurityResolverModule extends AbstractModule {
 
-public interface LifecycleManager extends Service {
+	@Override
+	protected void configure() {
+		// TODO: Add DefaultPermissionResolver
+		// bind(PermissionResolver.class).to(DefaultPermissionResolver.class).in(Singleton.class);
 
-	void registerLifecycleAware(LifecycleAware lifecycleAware);
+		// TODO: Add DefaultPrincipalResolver
+		// bind(PrincipalResolver.class).to(DefaultPrincipalResolver.class).in(Singleton.class);
 
-	void removeLifecycleAware(LifecycleAware lifecycleAware);
-
-	Collection<LifecycleAware> getLifecycleAwares();
-
-	void shutdown(long timeout) throws Exception;
-
-	String getUptime();
-
-	Date getStartTime();
-
-	String getVersion();
+		// TODO: Add DefaultSecurityGroupResolver
+		// bind(SecurityGroupResolver.class).to(DefaultSecurityGroupResolver.class).in(Singleton.class);
+	}
 
 }

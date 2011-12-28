@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium.api.lifecycle;
+package org.rhegium;
 
-import java.util.Collection;
-import java.util.Date;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.AllPermission;
+import java.security.CodeSource;
+import java.security.PermissionCollection;
 
-import org.rhegium.api.Service;
+class FrameworkClassLoader extends URLClassLoader {
 
-public interface LifecycleManager extends Service {
+	public FrameworkClassLoader(final URL[] urls, final ClassLoader parent) {
+		super(urls, parent);
+	}
 
-	void registerLifecycleAware(LifecycleAware lifecycleAware);
-
-	void removeLifecycleAware(LifecycleAware lifecycleAware);
-
-	Collection<LifecycleAware> getLifecycleAwares();
-
-	void shutdown(long timeout) throws Exception;
-
-	String getUptime();
-
-	Date getStartTime();
-
-	String getVersion();
+	@Override
+	protected PermissionCollection getPermissions(final CodeSource codesource) {
+		return new AllPermission().newPermissionCollection();
+	}
 
 }
