@@ -21,10 +21,14 @@ import org.rhegium.api.lifecycle.LifecycleManager;
 import com.google.inject.Inject;
 import com.google.inject.Key;
 
-public class LifecycleProvisionInterceptor implements ProvisionInterceptor {
+class LifecycleProvisionInterceptor implements ProvisionInterceptor {
+
+	private LifecycleManager lifecycleManager;
 
 	@Inject
-	private LifecycleManager lifecycleManager;
+	void setLifecycleManager(LifecycleManager lifecycleManager) {
+		this.lifecycleManager = lifecycleManager;
+	}
 
 	@Override
 	public <T> boolean accept(Key<T> key) {

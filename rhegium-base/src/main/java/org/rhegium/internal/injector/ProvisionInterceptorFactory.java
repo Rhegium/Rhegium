@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.rhegium.api.lifecycle.LifecycleManager;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Binder;
 import com.google.inject.Binding;
@@ -46,6 +48,7 @@ import com.google.inject.spi.UntargettedBinding;
 
 public final class ProvisionInterceptorFactory {
 
+	private static final Key<LifecycleManager> LIFECYCLE_MANAGER_KEY = Key.get(LifecycleManager.class);
 	private static final Key<Set<ProvisionInterceptor>> PROVISION_INTERCEPTOR_KEY = Key
 			.get(new TypeLiteral<Set<ProvisionInterceptor>>() {
 			});
@@ -93,7 +96,7 @@ public final class ProvisionInterceptorFactory {
 		public <T> Void visit(Binding<T> binding) {
 			final Key<T> key = binding.getKey();
 
-			if (key.equals(PROVISION_INTERCEPTOR_KEY)
+			if (key.equals(PROVISION_INTERCEPTOR_KEY) || key.equals(LIFECYCLE_MANAGER_KEY)
 					|| ProvisionInterceptor.class.isAssignableFrom(key.getTypeLiteral().getRawType())) {
 				return super.visit(binding);
 			}
@@ -101,7 +104,7 @@ public final class ProvisionInterceptorFactory {
 			if (binding instanceof UntargettedBinding) {
 				return null;
 			}
-			
+
 			Key<T> anonymousKey = Key.get(key.getTypeLiteral(), UniqueAnnotations.create());
 			binder.bind(key).toProvider(new ProvisionInterceptorProvider<T>(key, binder.getProvider(anonymousKey)));
 

@@ -22,6 +22,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.rhegium.api.i18n.LanguageService;
+import org.rhegium.internal.config.ResourceBundleControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +41,8 @@ public class DefaultLanguageService implements LanguageService {
 
 	@Inject
 	public DefaultLanguageService(@Named("LanguageBundleName") String languageBundleName) {
-		resourceBundles.put(FALLBACK_LANGUAGE_ISO.getISO3Language(),
-				ResourceBundle.getBundle(languageBundleName, FALLBACK_LANGUAGE_ISO));
+		resourceBundles.put(FALLBACK_LANGUAGE_ISO.getISO3Language(), ResourceBundle.getBundle(languageBundleName,
+				FALLBACK_LANGUAGE_ISO, getClass().getClassLoader(), new ResourceBundleControl()));
 
 		this.languageBundleName = languageBundleName;
 	}

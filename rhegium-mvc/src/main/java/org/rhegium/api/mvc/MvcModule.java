@@ -74,6 +74,10 @@ public class MvcModule extends AbstractModule {
 		Collection<ClassInfo> classInfos = query.list(classPool);
 		Collection<Class<? extends Controller<?, ?, ?>>> classes = new ArrayList<Class<? extends Controller<?, ?, ?>>>();
 		for (ClassInfo classInfo : classInfos) {
+			if (classInfo != null && classInfo.isAbstract()) {
+				continue;
+			}
+
 			try {
 				LOG.info("\tFound ComponentController " + classInfo.getCanonicalName());
 				classes.add((Class<? extends Controller<?, ?, ?>>) Class.forName(classInfo.getCanonicalName()));
@@ -104,6 +108,10 @@ public class MvcModule extends AbstractModule {
 		Collection<ClassInfo> classInfos = query.list(classPool);
 		Collection<Class<? extends View<?, ?, ?>>> classes = new ArrayList<Class<? extends View<?, ?, ?>>>();
 		for (ClassInfo classInfo : classInfos) {
+			if (classInfo != null && classInfo.isAbstract()) {
+				continue;
+			}
+
 			try {
 				LOG.info("\tFound View " + classInfo.getCanonicalName());
 				classes.add((Class<? extends View<?, ?, ?>>) Class.forName(classInfo.getCanonicalName()));

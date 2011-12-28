@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium;
+package org.rhegium.vaadin.api.mvc;
 
-import java.net.URL;
-import java.net.URLClassLoader;
+import org.rhegium.api.mvc.MvcModule;
+import org.rhegium.api.uibinder.UiBinderService;
+import org.rhegium.vaadin.internal.mvc.VaadinUiBinderService;
 
-class FrameworkClassLoader extends URLClassLoader {
+import com.google.inject.Singleton;
 
-	public FrameworkClassLoader(final URL[] urls, final ClassLoader parent) {
-		super(urls, parent);
+public class RhegiumVaadinModule extends MvcModule {
+
+	@Override
+	protected void configure() {
+		super.configure();
+
+		bind(UiBinderService.class).to(VaadinUiBinderService.class).in(Singleton.class);
 	}
 
 }

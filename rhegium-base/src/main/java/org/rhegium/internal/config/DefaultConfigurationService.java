@@ -73,6 +73,8 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 		try {
 			Path basePath = new File(".").toPath();
 			this.watchService = basePath.getFileSystem().newWatchService();
+
+			initializeConfiguration();
 		}
 		catch (IOException e) {
 			throw new IllegalStateException("WatchService could not be prepared", e);
@@ -80,8 +82,7 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 
 	}
 
-	@Override
-	public void initialized() {
+	private void initializeConfiguration() {
 		// Load all properties
 		try {
 			if (configurationBase == null) {
@@ -113,15 +114,14 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 	@SuppressWarnings("unchecked")
 	public <T extends Enum<T> & Configuration<T>, V> V getProperty(T configuration, String expression) {
 		final String value = getProperty0(configuration.getKey(), expression, configuration.getDefaultValue(),
-				configuration.getType(), configuration.isMultiKey() && StringUtils.isEmpty(expression));
+				configuration.getType(), configuration.isMultiKey() && !StringUtils.isEmpty(expression));
 
 		try {
 			return (V) typeConverterManager.convert(value, configuration.getType());
 
 		}
 		catch (final ConfigurationProvisionException e) {
-			throw new ConfigurationProvisionException(String.format("Could not provision configuration key %s",
-					configuration), e);
+			throw new ConfigurationProvisionException(String.format("Could not provision configuration key %s", configuration), e);
 		}
 	}
 
@@ -134,8 +134,8 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 
 		}
 		catch (final ConfigurationProvisionException e) {
-			throw new ConfigurationProvisionException(String.format("Could not provision configuration key %s",
-					configurationKey), e);
+			throw new ConfigurationProvisionException(
+					String.format("Could not provision configuration key %s", configurationKey), e);
 		}
 	}
 
@@ -220,8 +220,7 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 		}
 
 		if (configuration.isDirectory()) {
-			LOG.info(StringUtils.join(" ", "Registering directory ", configuration.getName(),
-					" for filesystem events..."));
+			LOG.info(StringUtils.join(" ", "Registering directory ", configuration.getName(), " for filesystem events..."));
 
 			configuration.toPath().register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
 					StandardWatchEventKinds.ENTRY_MODIFY);
@@ -257,8 +256,8 @@ class DefaultConfigurationService extends AbstractService implements Configurati
 			final String value = properties.getProperty(sKey);
 
 			if (oldValue != null) {
-				LOG.info(StringUtils.join(" ", "Overriding old configuration value '", key.toString(), "' ==> '",
-						oldValue, "' with '", value, "'"));
+				LOG.info(StringUtils.join(" ", "Overriding old configuration value '", key.toString(), "' ==> '", oldValue,
+						"' with '", value, "'"));
 			}
 
 			this.properties.put(sKey, value);

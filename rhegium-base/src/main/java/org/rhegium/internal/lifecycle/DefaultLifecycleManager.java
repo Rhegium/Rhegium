@@ -82,6 +82,10 @@ class DefaultLifecycleManager extends AbstractService implements LifecycleManage
 
 	@Override
 	public void registerLifecycleAware(final LifecycleAware lifecycleAware) {
+		if (lifecycleAware == this) {
+			return;
+		}
+
 		lifecycleAwares.add(lifecycleAware);
 	}
 

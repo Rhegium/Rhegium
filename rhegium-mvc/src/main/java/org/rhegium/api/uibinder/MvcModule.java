@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium;
+package org.rhegium.api.uibinder;
 
-import java.net.URL;
-import java.net.URLClassLoader;
+import org.rhegium.internal.uibinder.UiBinderModule;
 
-class FrameworkClassLoader extends URLClassLoader {
+import com.google.inject.AbstractModule;
 
-	public FrameworkClassLoader(final URL[] urls, final ClassLoader parent) {
-		super(urls, parent);
+public class MvcModule extends AbstractModule {
+
+	@Override
+	protected void configure() {
+		install(new UiBinderModule());
 	}
 
 }

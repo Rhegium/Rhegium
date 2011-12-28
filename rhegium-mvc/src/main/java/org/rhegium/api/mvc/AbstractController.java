@@ -51,7 +51,8 @@ public abstract class AbstractController<C, CC extends Controller<C, CC, V>, V e
 	private PermissionResolver permissionResolver;
 
 	@Inject
-	private UiBinderService<C> binderService;
+	@SuppressWarnings("rawtypes")
+	private UiBinderService binderService;
 
 	@Inject
 	private Injector injector;

@@ -28,10 +28,13 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
+import org.rhegium.api.lifecycle.LifecycleAware;
 import org.rhegium.api.lifecycle.LifecycleManager;
 import org.rhegium.api.modules.FrameworkPlugin;
 import org.rhegium.api.modules.PluginDependency;
@@ -50,8 +53,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Binding;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 
@@ -162,8 +167,18 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 			final PluginManager pm = (PluginManager) pluginManager;
 
 			for (final FrameworkPlugin plugin : plugins) {
-				LOG.info(StringUtils.join(" ", "Registering Plugin '", plugin.getName(), "'..."));
+				LOG.info(StringUtils.join("", "Registering Plugin '", plugin.getName(), "'..."));
 				pm.registerPlugin(plugin);
+			}
+		}
+
+		// Register all LifecycleAware keys
+		Map<Key<?>, Binding<?>> bindings = injector.getBindings();
+		for (Entry<Key<?>, Binding<?>> entry : bindings.entrySet()) {
+			Class<?> type = entry.getKey().getTypeLiteral().getRawType();
+			if (LifecycleAware.class.isAssignableFrom(type)) {
+				Object instance = injector.getInstance(entry.getKey());
+				lifecycleManager.registerLifecycleAware((LifecycleAware) instance);
 			}
 		}
 
