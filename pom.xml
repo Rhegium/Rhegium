@@ -46,8 +46,8 @@
 		<cappadocia.version>0.0.1-SNAPSHOT</cappadocia.version>
 		<hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
 
-		<maven.compile.source>1.6</maven.compile.source>
-		<maven.compile.target>1.6</maven.compile.target>
+		<maven.compile.source>1.7</maven.compile.source>
+		<maven.compile.target>1.7</maven.compile.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -254,7 +254,7 @@
 					<detectLinks>true</detectLinks>
 					<source>${maven.compile.target}</source>
 					<links>
-						<link>http://docs.oracle.com/javase/6/docs/api/</link>
+						<link>http://docs.oracle.com/javase/7/docs/api/</link>
 					</links>
 				</configuration>
 				<executions>
