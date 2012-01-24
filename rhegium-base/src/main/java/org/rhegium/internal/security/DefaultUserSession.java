@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium.api.security;
+package org.rhegium.internal.security;
 
 import java.util.Locale;
 
+import org.rhegium.api.security.LogoutListener;
+import org.rhegium.api.security.Principal;
+import org.rhegium.api.security.SecurityService;
+import org.rhegium.api.security.UserSession;
 import org.rhegium.api.security.authenticator.Authenticator;
 
-public abstract class AbstractUserSession<T> implements UserSession<T> {
+public class DefaultUserSession<T> implements UserSession<T> {
 
 	private final T session;
 	private final Principal principal;
@@ -28,11 +32,11 @@ public abstract class AbstractUserSession<T> implements UserSession<T> {
 
 	private Locale locale;
 
-	public AbstractUserSession(Principal principal, T session, Locale locale, SecurityService securityService) {
+	public DefaultUserSession(Principal principal, T session, Locale locale, SecurityService securityService) {
 		this(principal, session, locale, false, securityService);
 	}
 
-	public AbstractUserSession(Principal principal, T session, Locale locale, boolean autoLogin,
+	public DefaultUserSession(Principal principal, T session, Locale locale, boolean autoLogin,
 			SecurityService securityService) {
 
 		this.principal = principal;
@@ -95,7 +99,7 @@ public abstract class AbstractUserSession<T> implements UserSession<T> {
 	private static <T> UserSession<T> buildUnauthenticatedUserSession(T session, Locale locale,
 			SecurityService securityService) {
 
-		return new AbstractUserSession<T>(null, session, locale, securityService) {
+		return new DefaultUserSession<T>(null, session, locale, securityService) {
 		};
 	}
 
