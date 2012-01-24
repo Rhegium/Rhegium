@@ -15,11 +15,9 @@
  */
 package org.rhegium.internal.security;
 
-import java.util.Locale;
-
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.rhegium.api.injector.AnnotatedInterfaceMatcher;
-import org.rhegium.api.security.LogoutListener;
 import org.rhegium.api.security.Permission;
 import org.rhegium.api.security.PermissionAllowed;
 import org.rhegium.api.security.PermissionDeniedException;
@@ -28,7 +26,7 @@ import org.rhegium.api.security.RequiresPermission;
 import org.rhegium.api.security.SecurityGroup;
 import org.rhegium.api.security.SecurityService;
 import org.rhegium.api.security.UserSession;
-import org.rhegium.api.security.authenticator.Authenticator;
+import org.rhegium.api.security.authenticator.AuthenticationService;
 import org.rhegium.api.security.spi.PermissionResolver;
 import org.rhegium.api.security.spi.PrincipalFactory;
 import org.rhegium.api.security.spi.SecurityGroupResolver;
@@ -50,51 +48,7 @@ public class SimplePermissionTestCase {
 		final PrincipalFactory factory = injector.getInstance(PrincipalFactory.class);
 		final Principal principal = factory.create("Peter", 1000, new String[] { "Peter2", "Peter" });
 
-		securityService.setUserSession(new UserSession<Object>() {
-
-			@Override
-			public Principal getPrincipal() {
-				return principal;
-			}
-
-			@Override
-			public Object getNativeSession() {
-				return null;
-			}
-
-			@Override
-			public SecurityService getSecurityService() {
-				return null;
-			}
-
-			@Override
-			public boolean isAutoLogin() {
-				return false;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				return false;
-			}
-
-			@Override
-			public void setLocale(Locale locale) {
-			}
-
-			@Override
-			public Locale getLocale() {
-				return null;
-			}
-
-			@Override
-			public void logout(LogoutListener... logoutListeners) {
-			}
-
-			@Override
-			public Authenticator getAuthenticator() {
-				return null;
-			}
-		});
+		securityService.setUserSession(buildUserSession(principal));
 
 		TestNoPermission instance = injector.getInstance(TestNoPermission.class);
 		instance.test();
@@ -108,51 +62,7 @@ public class SimplePermissionTestCase {
 		final PrincipalFactory factory = injector.getInstance(PrincipalFactory.class);
 		final Principal principal = factory.create("Peter", 1000, new String[] { "Peter2", "Peter" });
 
-		securityService.setUserSession(new UserSession<Object>() {
-
-			@Override
-			public Principal getPrincipal() {
-				return principal;
-			}
-
-			@Override
-			public Object getNativeSession() {
-				return null;
-			}
-
-			@Override
-			public SecurityService getSecurityService() {
-				return null;
-			}
-
-			@Override
-			public boolean isAutoLogin() {
-				return false;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				return false;
-			}
-
-			@Override
-			public void setLocale(Locale locale) {
-			}
-
-			@Override
-			public Locale getLocale() {
-				return null;
-			}
-
-			@Override
-			public void logout(LogoutListener... logoutListeners) {
-			}
-
-			@Override
-			public Authenticator getAuthenticator() {
-				return null;
-			}
-		});
+		securityService.setUserSession(buildUserSession(principal));
 
 		TestAlwaysGrant instance = injector.getInstance(TestAlwaysGrant.class);
 		instance.test();
@@ -166,51 +76,7 @@ public class SimplePermissionTestCase {
 		final PrincipalFactory factory = injector.getInstance(PrincipalFactory.class);
 		final Principal principal = factory.create("Peter", 1000, new String[] { "Peter2", "Peter" });
 
-		securityService.setUserSession(new UserSession<Object>() {
-
-			@Override
-			public Principal getPrincipal() {
-				return principal;
-			}
-
-			@Override
-			public Object getNativeSession() {
-				return null;
-			}
-
-			@Override
-			public SecurityService getSecurityService() {
-				return null;
-			}
-
-			@Override
-			public boolean isAutoLogin() {
-				return false;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				return false;
-			}
-
-			@Override
-			public void setLocale(Locale locale) {
-			}
-
-			@Override
-			public Locale getLocale() {
-				return null;
-			}
-
-			@Override
-			public void logout(LogoutListener... logoutListeners) {
-			}
-
-			@Override
-			public Authenticator getAuthenticator() {
-				return null;
-			}
-		});
+		securityService.setUserSession(buildUserSession(principal));
 
 		TestInterface instance = injector.getInstance(TestInterface.class);
 		instance.fail();
@@ -224,54 +90,17 @@ public class SimplePermissionTestCase {
 		final PrincipalFactory factory = injector.getInstance(PrincipalFactory.class);
 		final Principal principal = factory.create("Peter", 1000, new String[] { "Peter2", "Peter" });
 
-		securityService.setUserSession(new UserSession<Object>() {
-
-			@Override
-			public Principal getPrincipal() {
-				return principal;
-			}
-
-			@Override
-			public Object getNativeSession() {
-				return null;
-			}
-
-			@Override
-			public SecurityService getSecurityService() {
-				return null;
-			}
-
-			@Override
-			public boolean isAutoLogin() {
-				return false;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				return false;
-			}
-
-			@Override
-			public void setLocale(Locale locale) {
-			}
-
-			@Override
-			public Locale getLocale() {
-				return null;
-			}
-
-			@Override
-			public void logout(LogoutListener... logoutListeners) {
-			}
-
-			@Override
-			public Authenticator getAuthenticator() {
-				return null;
-			}
-		});
+		securityService.setUserSession(buildUserSession(principal));
 
 		TestInterface instance = injector.getInstance(TestInterface.class);
 		instance.success();
+	}
+
+	@SuppressWarnings("unchecked")
+	private UserSession<Object> buildUserSession(Principal principal) {
+		UserSession<Object> userSession = Mockito.mock(UserSession.class);
+		Mockito.when(userSession.getPrincipal()).thenReturn(principal);
+		return userSession;
 	}
 
 	private class PermissionModule extends AbstractModule {
@@ -281,6 +110,7 @@ public class SimplePermissionTestCase {
 			bind(SecurityGroupResolver.class).to(TestSecurityGroupResolver.class).in(Singleton.class);
 			bind(PermissionResolver.class).to(TestPermissionResolver.class).in(Singleton.class);
 			bind(SecurityService.class).to(DefaultSecurityService.class).asEagerSingleton();
+			bind(AuthenticationService.class).toInstance(Mockito.mock(AuthenticationService.class));
 
 			bind(TestNoPermission.class);
 			bind(TestAlwaysGrant.class);
