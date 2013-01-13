@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.rhegium.api.mvc;
+package org.rhegium.servlet.api;
 
-public interface ViewManager {
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-	void close(View<?, ?, ?> view);
+public interface DispatchedAction {
 
-	void showMsg(String msg);
-
-	void showWarning(String warning);
-
-	void showError(String error);
-
-	<W> ApplicationLayout<W> getApplicationWindow();
+	void handleRequest(HttpServletRequest request, HttpServletResponse response);
 
 }

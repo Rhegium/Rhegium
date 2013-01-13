@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.rhegium.api.AbstractService;
 import org.rhegium.api.lifecycle.LifecycleAware;
@@ -41,6 +42,8 @@ class DefaultLifecycleManager extends AbstractService implements LifecycleManage
 	private final Set<LifecycleAware> lifecycleAwares = new CopyOnWriteArraySet<LifecycleAware>();
 
 	private final String version;
+
+	private final AtomicBoolean shutdown = new AtomicBoolean(false);
 
 	private Calendar calendar;
 
@@ -122,6 +125,11 @@ class DefaultLifecycleManager extends AbstractService implements LifecycleManage
 
 	@Override
 	public void shutdown(final long timeout) throws Exception {
+		if (shutdown.get()) {
+			return;
+		}
+		shutdown.set(true);
+
 		LOG.info("Starting shutdown...");
 
 		try {

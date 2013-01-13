@@ -90,8 +90,7 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("Adding ClassLoader to prevent access to base classes...");
 		}
-		firewallingClassLoader = new FrameworkFirewallingClassLoader(classLoader, loadMultiStringProperty(properties,
-				PROPERTIES_BOOTSTRAP_PRIVILEGED_PACKAGES));
+		firewallingClassLoader = new FrameworkFirewallingClassLoader(classLoader, loadMultiStringProperty(properties, PROPERTIES_BOOTSTRAP_PRIVILEGED_PACKAGES));
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("Actual ClassLoader Hierarchy: " + ReflectionUtils.buildClassLoaderHierachy(firewallingClassLoader));
@@ -101,8 +100,8 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 		final File workPath = findWorkPath(properties);
 
 		// Find all plugins
-		final Collection<ResolvablePluginDependency> pluginDescriptors = PluginContextHelper
-				.precheckAndReorderPluginDescriptors(buildPluginDescriptors(firewallingClassLoader, pluginPath, workPath));
+		final Collection<ResolvablePluginDependency> pluginDescriptors = PluginContextHelper.precheckAndReorderPluginDescriptors(buildPluginDescriptors(
+				firewallingClassLoader, pluginPath, workPath));
 
 		// Add buddy classloaders
 		addBuddyClassLoaders(pluginDescriptors);
@@ -111,12 +110,9 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 
 		final Collection<FrameworkPlugin> plugins = new ArrayList<FrameworkPlugin>();
 		for (final ResolvablePluginDependency pluginDescriptor : pluginDescriptors) {
-			LOG.info(StringUtils.join(
-					" ",
-					"Creating bundle ",
-					pluginDescriptor.getName(),
-					(!pluginDescriptor.isApiBundle() ? StringUtils.join(" ", "by using Class '", pluginDescriptor
-							.getPluginClass().getCanonicalName()) : " (API-Bundle)"), "..."));
+			LOG.info(StringUtils.join(" ", "Creating bundle ", pluginDescriptor.getName(),
+					(!pluginDescriptor.isApiBundle() ? StringUtils.join(" ", "by using Class '", pluginDescriptor.getPluginClass().getCanonicalName())
+							: " (API-Bundle)"), "..."));
 
 			if (!pluginDescriptor.isApiBundle()) {
 				final FrameworkPlugin plugin = pluginDescriptor.getPluginClass().newInstance();
@@ -145,8 +141,7 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 
 			@Override
 			protected void configure() {
-				bindConstant().annotatedWith(Names.named("configurationBase")).to(
-						new File(STANDARD_CONFIGURATION_FOLDER).getAbsolutePath());
+				bindConstant().annotatedWith(Names.named("configurationBase")).to(new File(getConfigurationBase()).getAbsolutePath());
 			}
 		});
 
@@ -198,24 +193,30 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 	protected abstract void postStartup() throws Exception;
 
 	private void deactivateJULI() {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("Redirect java.util.logging to SLF4J just before start...");
-			final java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+		LOG.info("Redirect java.util.logging to SLF4J just before start...");
+		final java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
 
-			for (final Handler handler : rootLogger.getHandlers()) {
-				rootLogger.removeHandler(handler);
-			}
-
-			SLF4JBridgeHandler.install();
+		for (final Handler handler : rootLogger.getHandlers()) {
+			rootLogger.removeHandler(handler);
 		}
+
+		SLF4JBridgeHandler.install();
 	}
 
 	private Properties loadProperties() throws IOException {
-		final File configDirectory = new File(STANDARD_CONFIGURATION_FOLDER);
+		final File configDirectory = new File(getConfigurationBase());
 		final Properties properties = new Properties();
 		properties.load(new FileReader(new File(configDirectory, "framework.properties")));
 
 		return properties;
+	}
+
+	private String getConfigurationBase() {
+		String configurationBase = System.getProperty("org.rhegium.configurationBase");
+		if (configurationBase == null) {
+			configurationBase = STANDARD_CONFIGURATION_FOLDER;
+		}
+		return configurationBase;
 	}
 
 	private File findPluginsPath(final Properties properties) {
@@ -223,14 +224,12 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 
 		final File pluginPath = new File(pluginsFolder);
 		if (!pluginPath.exists() && !pluginPath.isDirectory()) {
-			throw new IllegalArgumentException(StringUtils.join(" ", PROPERTIES_BOOTSTRAP_PLUGIN_FOLDER,
-					" must exists and be a directory"));
+			throw new IllegalArgumentException(StringUtils.join(" ", PROPERTIES_BOOTSTRAP_PLUGIN_FOLDER, " must exists and be a directory"));
 		}
 		return pluginPath;
 	}
 
-	private List<ResolvablePluginDependency> buildPluginDescriptors(final ClassLoader classLoader, final File pluginPath,
-			final File workPath) {
+	private List<ResolvablePluginDependency> buildPluginDescriptors(final ClassLoader classLoader, final File pluginPath, final File workPath) {
 
 		return AccessController.doPrivileged(new PrivilegedAction<List<ResolvablePluginDependency>>() {
 
@@ -243,8 +242,7 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 					PluginDescriptor pluginDescriptor = PluginContextHelper.buildPluginDescriptor(child, workPath, classLoader);
 
 					if (pluginDescriptor != null) {
-						LOG.info(StringUtils.join(" ", "Found plugin '", pluginDescriptor.getName(), "' in path ",
-								child.getAbsolutePath()));
+						LOG.info(StringUtils.join(" ", "Found plugin '", pluginDescriptor.getName(), "' in path ", child.getAbsolutePath()));
 
 						pluginDescriptors.add(pluginDescriptor);
 					}
@@ -267,9 +265,7 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Collection<Module> loadAndBuildFrameworkModules(final Properties properties, final ClassLoader classLoader)
-			throws ReflectiveOperationException {
-
+	private Collection<Module> loadAndBuildFrameworkModules(final Properties properties, final ClassLoader classLoader) throws ReflectiveOperationException {
 		final String[] values = loadMultiStringProperty(properties, PROPERTIES_BOOTSTRAP_FRAMEWORK_MODULES);
 
 		final Collection<Module> modules = new ArrayList<Module>();
@@ -290,8 +286,7 @@ public abstract class AbstractBootstrapper implements Bootstrapper {
 		final File workPath = new File(workFolder);
 		if (workPath.exists()) {
 			if (!workPath.isDirectory()) {
-				throw new IllegalArgumentException(
-						StringUtils.join(" ", PROPERTIES_BOOTSTRAP_WORK_FOLDER, " must be a directory"));
+				throw new IllegalArgumentException(StringUtils.join(" ", PROPERTIES_BOOTSTRAP_WORK_FOLDER, " must be a directory"));
 			}
 
 			// Delete old work directory

@@ -65,7 +65,8 @@ class FirewallingClassLoader extends ClassLoader {
 	}
 
 	private boolean accept(final String path) {
-		if (path.startsWith("java.") || path.startsWith("sun.") || path.startsWith("com.sun.")) {
+		if (path.startsWith("java.") || path.startsWith("sun.") || path.startsWith("com.sun.")
+				|| path.startsWith("com.zeroturnaround.") || path.startsWith("org.zeroturnaround.")) {
 			return true;
 		}
 

@@ -52,6 +52,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.github.lightning</groupId>
+			<artifactId>lightning-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.lightning</groupId>
+			<artifactId>lightning-api</artifactId>
+			<version>${lightning.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>

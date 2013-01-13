@@ -60,19 +60,15 @@ public final class Starter {
 
 			JRE_BOOT_DELEGATION_PACKAGES = trimPackages(jreBootDelegationPackages.split(","));
 
-			FIREWALLING_CLASS_LOADER_CLASS = getProperty(properties, PROPERTIES_BOOTSTRAP_FIREWALLING_CLASSLOADER,
-					STANDARD_FIREWALLING_CLASS_LOADER_CLASS);
+			FIREWALLING_CLASS_LOADER_CLASS = getProperty(properties, PROPERTIES_BOOTSTRAP_FIREWALLING_CLASSLOADER, STANDARD_FIREWALLING_CLASS_LOADER_CLASS);
 
-			FRAMEWORK_CLASS_LOADER_CLASS = getProperty(properties, PROPERTIES_BOOTSTRAP_FRAMEWORK_CLASSLOADER,
-					STANDARD_FRAMEWORK_CLASS_LOADER_CLASS);
+			FRAMEWORK_CLASS_LOADER_CLASS = getProperty(properties, PROPERTIES_BOOTSTRAP_FRAMEWORK_CLASSLOADER, STANDARD_FRAMEWORK_CLASS_LOADER_CLASS);
 
-			FRAMEWORK_BOOTSTRAP_CLASS = getProperty(properties, PROPERTIES_FRAMEWORK_BOOTSTRAP_CLASS,
-					STANDARD_FRAMEWORK_BOOTSTRAP_CLASS);
+			FRAMEWORK_BOOTSTRAP_CLASS = getProperty(properties, PROPERTIES_FRAMEWORK_BOOTSTRAP_CLASS, STANDARD_FRAMEWORK_BOOTSTRAP_CLASS);
 
 			FRAMEWORK_ENTRY_POINT = getProperty(properties, PROPERTIES_FRAMEWORK_ENTRY_POINT, null);
 
-			FRAMEWORK_LIBRARY_FOLDER = getProperty(properties, PROPERTIES_BOOTSTRAP_FRAMEWORK_FOLDER,
-					STANDARD_FRAMEWORK_LIBRARY_FOLDER);
+			FRAMEWORK_LIBRARY_FOLDER = getProperty(properties, PROPERTIES_BOOTSTRAP_FRAMEWORK_FOLDER, STANDARD_FRAMEWORK_LIBRARY_FOLDER);
 		}
 		catch (final Exception e) {
 			throw new RuntimeException(e);
@@ -102,8 +98,7 @@ public final class Starter {
 
 		final Class<?> kickOffClazz = frameworkClassLoader.loadClass(FRAMEWORK_ENTRY_POINT);
 		if (!bootstrapClass.isAssignableFrom(kickOffClazz)) {
-			throw new IllegalArgumentException(PROPERTIES_FRAMEWORK_ENTRY_POINT + " must be an implementation of "
-					+ "org.rhegium.api.bootstrap.Bootstrapper");
+			throw new IllegalArgumentException(PROPERTIES_FRAMEWORK_ENTRY_POINT + " must be an implementation of " + "org.rhegium.api.bootstrap.Bootstrapper");
 		}
 
 		final Method initializer = kickOffClazz.getMethod("start", String[].class, ClassLoader.class);
@@ -115,8 +110,7 @@ public final class Starter {
 
 	private static ClassLoader loadFirewallingClassLoader() throws Exception {
 		final Class<ClassLoader> firewallingClassLoaderClass = loadFirewallingClassLoaderClass();
-		final Constructor<ClassLoader> constructor = firewallingClassLoaderClass
-				.getConstructor(String[].class, ClassLoader.class);
+		final Constructor<ClassLoader> constructor = firewallingClassLoaderClass.getConstructor(String[].class, ClassLoader.class);
 
 		System.out.println("Building FirewallingClassLoader...");
 
@@ -149,7 +143,7 @@ public final class Starter {
 		final List<URL> entries = new ArrayList<>();
 
 		// Add configuration directory
-		entries.add(new File(STANDARD_CONFIGURATION_FOLDER).toURI().toURL());
+		entries.add(new File(getConfigurationBase()).toURI().toURL());
 
 		// Add JAR files
 		entries.addAll(findAllJars(directory));
@@ -170,8 +164,18 @@ public final class Starter {
 
 			}
 			else if (entry.isFile() && entry.getName().toLowerCase().endsWith(".jar")) {
+				String override = System.getProperty("org.rhegium.override." + entry.getName());
+				if (override != null) {
+					File overrideFile = new File(override);
+					if (!overrideFile.exists()) {
+						throw new MalformedURLException("Override for " + entry.getName() + "'" + override + "' is no legal file or directory");
+					}
 
-				jars.add(entry.toURI().toURL());
+					jars.add(overrideFile.toURI().toURL());
+				}
+				else {
+					jars.add(entry.toURI().toURL());
+				}
 			}
 		}
 
@@ -179,11 +183,19 @@ public final class Starter {
 	}
 
 	private static Properties loadProperties() throws IOException {
-		final File configDirectory = new File(STANDARD_CONFIGURATION_FOLDER);
+		final File configDirectory = new File(getConfigurationBase());
 		final Properties properties = new Properties();
 		properties.load(new FileReader(new File(configDirectory, "framework.properties")));
 
 		return properties;
+	}
+
+	private static String getConfigurationBase() {
+		String configurationBase = System.getProperty("org.rhegium.configurationBase");
+		if (configurationBase == null) {
+			configurationBase = STANDARD_CONFIGURATION_FOLDER;
+		}
+		return configurationBase;
 	}
 
 	private static String getProperty(final Properties properties, final String propertyName, final String defaultValue) {
